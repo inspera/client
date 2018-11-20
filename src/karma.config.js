@@ -65,21 +65,18 @@ module.exports = function(config) {
         'coffeeify',
         istanbul({
           ignore: [
-            // Third party code
-            '**/node_modules/**', '**/vendor/*',
-            // Non JS modules
-            '**/*.html', '**/*.svg',
-          ],
+            // JS files are instrumented by babel-plugin-istanbul.
+            // browserify-istanbul is only used for CoffeeScript files.
+            '**/*.js',
 
-          // There is an outstanding bug with karma-coverage and istanbul
-          // in regards to doing source mapping and transpiling CoffeeScript.
-          // The least bad work around is to replace the instrumenter with
-          // isparta and it will handle doing the re mapping for us.
-          // This issue follows the issue and attempts to fix it:
-          // https://github.com/karma-runner/karma-coverage/issues/157
-          instrumenter: require('isparta'),
+            // Ignore non-script assets.
+            '**/*.html',
+            '**/*.svg',
+          ],
         }),
-        'babelify',
+        ['babelify', {
+          plugins: ['babel-plugin-istanbul'],
+        }],
       ],
     },
 
@@ -94,7 +91,10 @@ module.exports = function(config) {
     coverageReporter: {
       dir: '../coverage/',
       reporters: [
-        {type:'html'},
+        // Disable HTML reporter because it does not like the output from
+        // CoffeeScript transformed with coffeeify + istanbul.
+        //
+        // {type:'html'},
         {type:'json', subdir: './'},
       ],
     },
