@@ -7,6 +7,8 @@
   "bugs": "https://github.com/hypothesis/client/issues",
   "repository": "hypothesis/client",
   "devDependencies": {
+    "@babel/core": "^7.1.6",
+    "@babel/preset-env": "^7.1.6",
     "@octokit/rest": "^15.13.0",
     "angular": "^1.6.9",
     "angular-mocks": "^1.6.9",
@@ -17,8 +19,7 @@
     "autofill-event": "0.0.1",
     "autoprefixer": "^6.0.3",
     "aws-sdk": "^2.345.0",
-    "babel-preset-env": "^1.7.0",
-    "babelify": "^7.3.0",
+    "babelify": "^10.0.0",
     "browserify": "^13.0.0",
     "browserify-istanbul": "^2.0.0",
     "browserify-ngannotate": "^1.0.1",
