@@ -65,6 +65,7 @@ function session(
       // This serves to make loading the app in the extension cope better with
       // flakey connectivity but it also throttles the frequency of calls to
       // the /app endpoint.
+      lastLoadTime = Date.now();
       const uri = getDocumentDCIdentifier(store);
       return uri.then(uri => {
           lastLoadTime = Date.now();
@@ -82,7 +83,6 @@ function session(
               }, profileFetchRetryOpts)
               .then(function(session) {
                   update(session);
-                  lastLoadTime = Date.now();
                   return session;
               })
               .catch(function(err) {
