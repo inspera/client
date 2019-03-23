@@ -3,6 +3,9 @@
 'use strict';
 
 const path = require('path');
+const request = require('request-promise');
+const mkdirp = require('mkdirp');
+const groom = require('groom');
 
 const batch = require('gulp-batch');
 const changed = require('gulp-changed');
@@ -25,6 +28,7 @@ const manifest = require('./scripts/gulp/manifest');
 const servePackage = require('./scripts/gulp/serve-package');
 const vendorBundles = require('./scripts/gulp/vendor-bundles');
 const { useSsl } = require('./scripts/gulp/create-server');
+const fs = require('fs');
 
 const IS_PRODUCTION_BUILD = process.env.NODE_ENV === 'production';
 const SCRIPT_DIR = 'build/scripts';
@@ -33,12 +37,61 @@ const FONTS_DIR = 'build/fonts';
 const IMAGES_DIR = 'build/images';
 const TEMPLATES_DIR = 'src/sidebar/templates';
 
+const webtranslateit = 'https://webtranslateit.com/api/projects/';
+const webtranslateitReadKey = 'proj_pub_h-TswYPuN3K7EnSlMwcEdw';
+const captionFiles = {
+    prodFile: '734937',
+    locales: ['en-US', 'nb-NO', 'nn-NO', 'sv-SE', 'pl-PL', 'es-CO' ],
+};
+
 // LiveReloadServer instance for sending messages to connected
 // development clients
 let liveReloadServer;
 // List of file paths that changed since the last live-reload
 // notification was dispatched
 let liveReloadChangedFiles = [];
+
+function webTranslateFile(key, file, locale) {
+  return {
+      uri: `${webtranslateit}${key}/files/${file}/locales/${locale}`,
+      json: true,
+  };
+}
+function fetchFile(source) {
+  return request(source, (error) => {
+    if (error !== null) {
+      process.stdout.write(error);
+    }
+  });
+}
+
+function fetchCaptions(data) {
+  const file = data.prodFile;
+  const promises = [];
+  const json = {};
+  if (!fs.existsSync('i18n')) {
+    mkdirp('i18n');
+  }
+  for (let i = 0; i < data.locales.length; i++) {
+    const locale = data.locales[i];
+    promises.push(fetchFile(webTranslateFile(webtranslateitReadKey, file, locale)));
+    json[locale] = {};
+  }
+  Promise.all(promises)
+  .then((responses) => {
+    Object.keys(json).forEach((key, index) => {
+      const captions = groom(responses[index]);
+      json[key] = {
+          translation: captions,
+      };
+    });
+    return JSON.stringify(json);
+  })
+  .then((json) => {
+    fs.writeFileSync('i18n/index.json', json);
+    return true;
+  });
+}
 
 function parseCommandLine() {
   commander
@@ -340,7 +393,14 @@ gulp.task('serve-live-reload', function () {
   });
 });
 
+/* Loading captions from webtranslateit */
+gulp.task('captions', (done) => {
+  fetchCaptions(captionFiles);
+  done();
+});
+
 const buildAssets = gulp.parallel(
+  'captions',
   'build-js',
   'build-css',
   'build-fonts',
