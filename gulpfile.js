@@ -65,32 +65,40 @@ function fetchFile(source) {
   });
 }
 
-function fetchCaptions(data) {
-  const file = data.prodFile;
-  const promises = [];
-  const json = {};
+function fetchTranslationFile(locale) {
+  return fetchFile(webTranslateFile(webtranslateitReadKey, captionFiles.prodFile, locale))
+    .then((translation) => ({ locale, translation }));
+}
+
+function addTranslationForLocale(locale, translation, accumulator) {
+  accumulator[locale] = {
+    translation: groom(translation),
+  };
+  return accumulator;
+}
+
+function makeSureTheI18nFolderExists() {
   if (!fs.existsSync('i18n')) {
     mkdirp('i18n');
   }
-  for (let i = 0; i < data.locales.length; i++) {
-    const locale = data.locales[i];
-    promises.push(fetchFile(webTranslateFile(webtranslateitReadKey, file, locale)));
-    json[locale] = {};
-  }
-  Promise.all(promises)
-  .then((responses) => {
-    Object.keys(json).forEach((key, index) => {
-      const captions = groom(responses[index]);
-      json[key] = {
-          translation: captions,
-      };
+}
+
+function fetchCaptions(data) {
+  makeSureTheI18nFolderExists();
+
+  const promises = data.locales.map((locale) => fetchTranslationFile(locale));
+
+  Promise
+    .all(promises)
+    .then((translations) => {
+      const translationsPackage = translations
+        .reduce((accumulator, { locale, translation}) => {
+          return addTranslationForLocale(locale, translation, accumulator);
+        }, {});
+
+      fs.writeFileSync('i18n/index.json', JSON.stringify(translationsPackage));
+      return true;
     });
-    return JSON.stringify(json);
-  })
-  .then((json) => {
-    fs.writeFileSync('i18n/index.json', json);
-    return true;
-  });
 }
 
 function parseCommandLine() {
