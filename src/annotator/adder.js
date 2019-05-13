@@ -4,7 +4,7 @@ const classnames = require('classnames');
 
 const template = require('./adder.html');
 
-const i18nService = require('./i18nService');
+const i18nService = require('../sidebar/services/i18nService')();
 
 const ANNOTATE_BTN_SELECTOR = '.js-annotate-btn';
 const HIGHLIGHT_BTN_SELECTOR = '.js-highlight-btn';
