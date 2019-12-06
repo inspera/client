@@ -40,12 +40,14 @@ function PahoMQTTClientWrapper(store, url, annotationUpdateChannels, userId, csr
         const triggeringUserId = messageObject.data.triggeringUser;
         const currentTargetUrn = store.frames()[0].metadata.documentFingerprint;
         const currentFocusedChannel = store.focusedGroupId();
+        const annotationNotSharedNow = messageObject.data.options.action === 'not-shared';
 
         // if the annotation does not belong to the current user,
         // is targeted at the current context and channel
         if (triggeringUserId !== userId &&
-                messageObject.data.payload[0].uri == currentTargetUrn &&
-                messageObject.data.payload[0].group == currentFocusedChannel) {
+                (( messageObject.data.payload[0].uri == currentTargetUrn &&
+                    messageObject.data.payload[0].group == currentFocusedChannel) ||
+                    annotationNotSharedNow)) {
             delete messageObject.data.triggeringUser;
             messageObject.data = JSON.stringify(messageObject.data);
             onMessageReceived(messageObject);
