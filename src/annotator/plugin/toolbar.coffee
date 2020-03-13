@@ -48,8 +48,10 @@ module.exports = class Toolbar extends Plugin
           collapsed = @annotator.frame.hasClass('annotator-collapsed')
           if collapsed
             @annotator.show()
+            window.parent.postMessage({ type: 'hypothesis-update', action: 'sidebarExpand' }, '*')
           else
             @annotator.hide()
+            window.parent.postMessage({ type: 'hypothesis-update', action: 'sidebarCollapse' }, '*')
     ,
       "title": "Hide Highlights"
       "class": "h-icon-visibility"
