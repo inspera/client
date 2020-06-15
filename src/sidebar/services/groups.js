@@ -2,7 +2,7 @@
 
 const STORAGE_KEY = 'hypothesis.groups.focus';
 const DEFAULT_ORG_ID = '__default__';
-
+const  DEFAULT_CHANNEL = 'ch-individual-feedback';
 /**
  * FIXME: There is almost assuredly a better way to handle a fallback, default logo
  */
@@ -173,8 +173,12 @@ function groups(
         const prevFocusedGroup = localStorage.getItem(STORAGE_KEY);
 
         store.loadGroups(groups);
-        if (isFirstLoad && groups.some(g => g.id === prevFocusedGroup)) {
-          store.focusGroup(prevFocusedGroup);
+        if (isFirstLoad) {
+          if(groups.some(g => g.id === prevFocusedGroup)) {
+            store.focusGroup(prevFocusedGroup);
+          } else {
+            store.focusGroup(DEFAULT_CHANNEL);
+          }
         }
 
         return groups;
