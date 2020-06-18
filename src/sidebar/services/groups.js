@@ -1,6 +1,5 @@
 'use strict';
 
-const STORAGE_KEY = 'hypothesis.groups.focus';
 const DEFAULT_ORG_ID = '__default__';
 
 /**
@@ -15,7 +14,7 @@ const DEFAULT_ORGANIZATION = {
 
 const events = require('../events');
 const { combineGroups } = require('../util/groups');
-const { getDocumentDCIdentifier, getDCIdentifier } = require('../util/state-util');
+const { getDocumentDCIdentifier, getFocusedGroupStorageKeyFromUrn } = require('../util/state-util');
 const serviceConfig = require('../service-config');
 
 // @ngInject
@@ -170,8 +169,8 @@ function groups(
         injectOrganizations(groups);
 
         const isFirstLoad = store.allGroups().length === 0;
-        const dcIdentifier = getDCIdentifier(store);
-        const prevFocusedGroup = localStorage.getItem(`${dcIdentifier}_${STORAGE_KEY}`);
+        const focusedGroupStorageKey = getFocusedGroupStorageKeyFromUrn(store);
+        const prevFocusedGroup = sessionStorage.getItem(focusedGroupStorageKey);
 
         store.loadGroups(groups);
         if (isFirstLoad && groups.some(g => g.id === prevFocusedGroup)) {
@@ -225,8 +224,8 @@ function groups(
     if (focusedId !== prevFocusedId) {
       prevFocusedId = focusedId;
 
-      const dcIdentifier = getDCIdentifier(store);
-      localStorage.setItem(`${dcIdentifier}_${STORAGE_KEY}`, focusedId);
+      const focusedGroupStorageKey = getFocusedGroupStorageKeyFromUrn(store);
+      sessionStorage.setItem(focusedGroupStorageKey, focusedId);
 
       // Emit the `GROUP_FOCUSED` event for code that still relies on it.
       $rootScope.$broadcast(events.GROUP_FOCUSED, focusedId);
