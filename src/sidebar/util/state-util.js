@@ -3,26 +3,57 @@
 /**
  * Returns the documentFingerprint (DC identifier) when available in the frames state
  * @param store
+ * @returns {String}
+ *  sample urn:x-dc:inspera.com%2Fgrading%2F2374014%2F2338909%2F2374023
+ */
+function getDCIdentifier(store) {
+  const state = store.getState();
+  const metaFrame = state.frames.find(function (frame) {
+    return frame.metadata && frame.metadata.documentFingerprint;
+  });
+
+  return metaFrame ? metaFrame.metadata.documentFingerprint : null;
+}
+
+/**
+ * Returns the documentFingerprint (DC identifier) when available in the frames state
+ * @param store
  * @returns {Promise<T>}
  */
 function getDocumentDCIdentifier(store) {
   function getIdentifier() {
-    const state = store.getState();
-    const metaFrame = state.frames.find(function (frame) {
-      return frame.metadata && frame.metadata.documentFingerprint;
-    });
-    return metaFrame ? metaFrame.metadata.documentFingerprint : null;
+    return getDCIdentifier(store);
   }
   return awaitStateChange(store, getIdentifier);
 }
 
-function getDCIdentifier(store) {
-    const state = store.getState();
-    const metaFrame = state.frames.find(function (frame) {
-      return frame.metadata && frame.metadata.dc.identifier;
-    });
-    return metaFrame ? metaFrame.metadata.dc.identifier : null;
+/* URN Format for deliveries:
+ * urn:x-dc:inspera.com/grading/[assessmentRunId]/[questionId]/[partyId] => delivery tab
+ * urn:x-dc:inspera.com/grading/[assessmentRunId]/[questionId] => question tab
+ * urn:x-dc:inspera.com/grading/[assessmentRunId]/[partyId]/attachment/[attachmentCiId] => attachment tab
+* */
+/**
+ * Get the current active pane where annotation was saved.
+ * @param store
+ * sample urn:x-dc:inspera.com%2Fgrading%2F2374014%2F2338909%2F2374023
+ * @return {String} The active tab/pane.
+ */
+function getFocusedGroupStorageKeyFromUrn(store) {
+  const STORAGE_KEY = 'hypothesis.groups.focus';
+  const urn = getDCIdentifier(store);
+  const decodedUrn = decodeURIComponent(urn).split('/');
+  const assessmentRunId = decodedUrn[2];
+  switch (decodedUrn.length) {
+    case 5:
+      return `${assessmentRunId}_submission_${STORAGE_KEY}`;
+    case 4:
+      return `${assessmentRunId}_questionPreview_${STORAGE_KEY}`;
+    case 6:
+      return `${assessmentRunId}_attachment_${STORAGE_KEY}`;
   }
+  return undefined;
+}
+
 /**
  * Return a value from app state when it meets certain criteria.
  *
@@ -50,4 +81,4 @@ function awaitStateChange(store, selector) {
   });
 }
 
-module.exports = { awaitStateChange, getDocumentDCIdentifier, getDCIdentifier } ;
+module.exports = { awaitStateChange, getDocumentDCIdentifier, getFocusedGroupStorageKeyFromUrn } ;
