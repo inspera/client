@@ -6,6 +6,8 @@ const isThirdPartyService = require('../util/is-third-party-service');
 const memoize = require('../util/memoize');
 const tabs = require('../tabs');
 const uiConstants = require('../ui-constants');
+const { getDCIdentifier } = require('../util/state-util');
+const FOCUSE_GROUP_STORAGE_KEY =  'hypothesis.groups.focus';
 
 function firstKey(object) {
   for (const k in object) {
@@ -142,8 +144,15 @@ function SidebarContentController(
         annotationMapper.loadAnnotations(results);
       }
       if (!store.getState().defaultGroupIsFocussed && !results.length) {
-          const first = groups.all()[0];
-          groups.focus(first.id);
+        const dcIdentifier = getDCIdentifier(store);
+        const prevFocusedGroup = localStorage.getItem(`${dcIdentifier}_${FOCUSE_GROUP_STORAGE_KEY}`);
+        let first = groups.all()[0];
+
+        if(prevFocusedGroup) {
+          first = prevFocusedGroup;
+        }
+
+        groups.focus(first.id);
       }
       store.setDefaultGroupAsFocussed();
     });
