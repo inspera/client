@@ -6,6 +6,7 @@ const isThirdPartyService = require('../util/is-third-party-service');
 const memoize = require('../util/memoize');
 const tabs = require('../tabs');
 const uiConstants = require('../ui-constants');
+const { getFocusedGroupStorageKeyFromUrn } = require('../util/state-util');
 
 function firstKey(object) {
   for (const k in object) {
@@ -142,9 +143,17 @@ function SidebarContentController(
         annotationMapper.loadAnnotations(results);
       }
       if (!store.getState().defaultGroupIsFocussed && !results.length) {
+        const focusedGroupStorageKey = getFocusedGroupStorageKeyFromUrn(store);
+
+        if(focusedGroupStorageKey) {
+          const first = sessionStorage.getItem(focusedGroupStorageKey);
+          groups.focus(first);
+        } else {
           const first = groups.all()[0];
           groups.focus(first.id);
+        }
       }
+
       store.setDefaultGroupAsFocussed();
     });
     searchClient.on('end', function() {
