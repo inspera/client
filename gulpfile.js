@@ -52,6 +52,7 @@ const captionFiles = {
       'sv-SE-K12',
       'nb-NO-K12',
       'nn-NO-K12',
+      'nl-NL',
     ],
 };
 
