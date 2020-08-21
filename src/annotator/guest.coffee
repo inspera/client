@@ -63,6 +63,8 @@ module.exports = class Guest extends Delegator
   constructor: (element, config, anchoring = htmlAnchoring) ->
     super
 
+    this.config = config
+    this.onAnnotationsUpdate = config.onAnnotationsUpdate || () -> {}
     this.adder = $(this.html.adder).appendTo(@element).hide()
 
     self = this
@@ -103,9 +105,18 @@ module.exports = class Guest extends Delegator
     this.addPlugin('CrossFrame', cfOptions)
     @crossframe = this.plugins.CrossFrame
 
-    @crossframe.onConnect(=> this._setupInitialState(config))
+    if config.disableSidebar
+      this._setupInitialState(config)
+    else
+      @crossframe.onConnect(=> this._setupInitialState(config))
+
     this._connectAnnotationSync(@crossframe)
     this._connectAnnotationUISync(@crossframe)
+
+    config.initialAnnotations && config.initialAnnotations.forEach((item) -> 
+      initAnchor = {target: [{selector: item}]}
+      self.anchor(initAnchor)
+    )
 
     # Load plugins
     for own name, opts of @options
@@ -362,6 +373,11 @@ module.exports = class Guest extends Delegator
 
     targets.then(-> self.publish('beforeAnnotationCreated', [annotation]))
     targets.then(-> self.anchor(annotation))
+    targets.then(-> 
+      anchorsToSave = self._composeExistingAnnotations()
+      anchorsToSave.push(annotation.target[0].selector)
+      self.onAnnotationsUpdate(anchorsToSave)
+    )
 
     @crossframe?.call('showSidebar') unless annotation.$highlight
     annotation
@@ -420,7 +436,11 @@ module.exports = class Guest extends Delegator
     selection = document.getSelection()
     isBackwards = rangeUtil.isSelectionBackwards(selection)
     focusRect = rangeUtil.selectionFocusRect(selection)
-    if !focusRect
+    container = if range.startContainer.nodeType == 1 then range.startContainer else range.startContainer.parentNode
+    included = this._isIncluded(container)
+    excluded = this._isExcluded(container)
+
+    if !focusRect || !included || excluded
       # The selected range does not contain any text
       this._onClearSelection()
       return
@@ -431,6 +451,20 @@ module.exports = class Guest extends Delegator
     {left, top, arrowDirection} = this.adderCtrl.target(focusRect, isBackwards)
     this.adderCtrl.annotationsForSelection = annotationsForSelection()
     this.adderCtrl.showAt(left, top, arrowDirection)
+
+  _isIncluded: (element) ->
+    includeRange = this.config.adderRange.include
+    if !includeRange
+      return true
+
+    includeRange.some((item) -> element.closest(item))
+
+  _isExcluded: (element) ->
+    excludeRange = this.config.adderRange.exclude
+    if !excludeRange
+      return false
+
+    excludeRange.some((item) -> element.closest(item))
 
   _onClearSelection: () ->
     this.adderCtrl.hide()
@@ -491,6 +525,11 @@ module.exports = class Guest extends Delegator
       xor = (event.metaKey or event.ctrlKey)
       setTimeout => this.selectAnnotations(annotations, xor)
 
+    if this.config.removeOnClick
+      this.deleteAnnotation(annotation)
+      this.detach(annotation)
+      this.onAnnotationsUpdate(this._composeExistingAnnotations())
+
   # Pass true to show the highlights in the frame or false to disable.
   setVisibleHighlights: (shouldShowHighlights) ->
     this.toggleHighlightClass(shouldShowHighlights)
@@ -503,3 +542,10 @@ module.exports = class Guest extends Delegator
 
     @visibleHighlights = shouldShowHighlights
     @toolbar?.highlightsVisible = shouldShowHighlights
+
+  _composeExistingAnnotations: () ->
+    this.anchors
+      .filter((item) -> !!item.target)
+      .map((item) ->
+        item.target.selector
+      )

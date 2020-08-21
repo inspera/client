@@ -60,7 +60,8 @@ module.exports = class Host extends Guest
 
     super
 
-    app.appendTo(@frame || @externalFrame)
+    if !config.disableSidebar
+      app.appendTo(@frame || @externalFrame)
 
     this.on 'panelReady', =>
       # Show the UI
