@@ -434,9 +434,14 @@ module.exports = class Guest extends Delegator
     selection = document.getSelection()
     isBackwards = rangeUtil.isSelectionBackwards(selection)
     focusRect = rangeUtil.selectionFocusRect(selection)
-    container = if range.startContainer.nodeType == 1 then range.startContainer else range.startContainer.parentNode
-    included = this._isIncluded(container)
-    excluded = this._isExcluded(container)
+    
+    if (range.startContainer)
+      container = if range.startContainer.nodeType == 1 then range.startContainer else range.startContainer.parentNode
+      included = this._isIncluded(container)
+      excluded = this._isExcluded(container)
+    else
+      included = true
+      excluded = false
 
     if !focusRect || !included || excluded
       # The selected range does not contain any text
