@@ -64,7 +64,6 @@ module.exports = class Guest extends Delegator
     super
 
     this.config = config
-    this.onAnnotationsUpdate = config.onAnnotationsUpdate || () -> {}
     this.adder = $(this.html.adder).appendTo(@element).hide()
 
     self = this
@@ -373,11 +372,7 @@ module.exports = class Guest extends Delegator
 
     targets.then(-> self.publish('beforeAnnotationCreated', [annotation]))
     targets.then(-> self.anchor(annotation))
-    targets.then(-> 
-      anchorsToSave = self._composeExistingAnnotations()
-      anchorsToSave.push(annotation.target[0].selector)
-      self.onAnnotationsUpdate(anchorsToSave)
-    )
+    targets.then(-> self.config.onAnnotationAdded(annotation.target[0].selector))
 
     @crossframe?.call('showSidebar') unless annotation.$highlight
     annotation
@@ -528,7 +523,7 @@ module.exports = class Guest extends Delegator
     if this.config.removeOnClick
       this.deleteAnnotation(annotation)
       this.detach(annotation)
-      this.onAnnotationsUpdate(this._composeExistingAnnotations())
+      this.config.onAnnotationRemoved(annotation.target[0].selector)
 
   # Pass true to show the highlights in the frame or false to disable.
   setVisibleHighlights: (shouldShowHighlights) ->
