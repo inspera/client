@@ -372,7 +372,10 @@ module.exports = class Guest extends Delegator
 
     targets.then(-> self.publish('beforeAnnotationCreated', [annotation]))
     targets.then(-> self.anchor(annotation))
-    targets.then(-> self.config.onAnnotationAdded(annotation.target[0].selector))
+    targets.then(-> 
+      if annotation.target[0]
+        self.config.onAnnotationAdded(annotation.target[0].selector)
+    )
 
     @crossframe?.call('showSidebar') unless annotation.$highlight
     annotation
