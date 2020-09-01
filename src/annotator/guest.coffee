@@ -64,7 +64,6 @@ module.exports = class Guest extends Delegator
     super
 
     this.config = config
-    this.onAnnotationsUpdate = config.onAnnotationsUpdate || () -> {}
     this.adder = $(this.html.adder).appendTo(@element).hide()
 
     self = this
@@ -374,9 +373,8 @@ module.exports = class Guest extends Delegator
     targets.then(-> self.publish('beforeAnnotationCreated', [annotation]))
     targets.then(-> self.anchor(annotation))
     targets.then(-> 
-      anchorsToSave = self._composeExistingAnnotations()
-      anchorsToSave.push(annotation.target[0].selector)
-      self.onAnnotationsUpdate(anchorsToSave)
+      if annotation.target[0]
+        self.config.onAnnotationAdded(annotation.target[0].selector)
     )
 
     @crossframe?.call('showSidebar') unless annotation.$highlight
@@ -436,9 +434,14 @@ module.exports = class Guest extends Delegator
     selection = document.getSelection()
     isBackwards = rangeUtil.isSelectionBackwards(selection)
     focusRect = rangeUtil.selectionFocusRect(selection)
-    container = if range.startContainer.nodeType == 1 then range.startContainer else range.startContainer.parentNode
-    included = this._isIncluded(container)
-    excluded = this._isExcluded(container)
+    
+    if (range.startContainer)
+      container = if range.startContainer.nodeType == 1 then range.startContainer else range.startContainer.parentNode
+      included = this._isIncluded(container)
+      excluded = this._isExcluded(container)
+    else
+      included = true
+      excluded = false
 
     if !focusRect || !included || excluded
       # The selected range does not contain any text
@@ -528,7 +531,7 @@ module.exports = class Guest extends Delegator
     if this.config.removeOnClick
       this.deleteAnnotation(annotation)
       this.detach(annotation)
-      this.onAnnotationsUpdate(this._composeExistingAnnotations())
+      this.config.onAnnotationRemoved(annotation.target[0].selector)
 
   # Pass true to show the highlights in the frame or false to disable.
   setVisibleHighlights: (shouldShowHighlights) ->
