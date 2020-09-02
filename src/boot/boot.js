@@ -42,7 +42,6 @@ function injectScript(doc, src) {
  */
 function injectAssets(doc, config, assets) {
   assets.forEach(function (path) {
-    // const url = config.assetRoot + 'build/' + config.manifest[path];
     const pt =
       config.manifest[path] || config.manifest[path.replace('/', '\\')];
     const url = config.assetRoot + 'build/' + pt;
