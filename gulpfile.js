@@ -229,6 +229,7 @@ let isFirstBuild = true;
  */
 function generateBootScript(manifest, { usingDevServer = false } = {}) {
   const { version } = require('./package.json');
+  const clientVersion = process.env.CLIENT_VERSION;
 
   const defaultSidebarAppUrl = process.env.SIDEBAR_APP_URL
     ? `${process.env.SIDEBAR_APP_URL}`
@@ -242,11 +243,7 @@ function generateBootScript(manifest, { usingDevServer = false } = {}) {
   } else {
     defaultAssetRoot = '{current_scheme}://{current_host}:3001/hypothesis';
   }
-  defaultAssetRoot = `${defaultAssetRoot}/${version}/`;
-
-  log(`version - ${version}`);
-  log(`client version - ${process.env.CLIENT_VERSION}`);
-  log(`branch - ${teamcity.build.branch}`);
+  defaultAssetRoot = `${defaultAssetRoot}/${clientVersion || version}/`;
 
   if (isFirstBuild) {
     log(`Sidebar app URL: ${defaultSidebarAppUrl}`);
