@@ -230,6 +230,9 @@ let isFirstBuild = true;
 function generateBootScript(manifest, { usingDevServer = false } = {}) {
   const { version } = require('./package.json');
 
+  log(`version - ${version}`)
+  log(`client version - ${process.env.CLIENT_VERSION}`)
+
   const defaultSidebarAppUrl = process.env.SIDEBAR_APP_URL
     ? `${process.env.SIDEBAR_APP_URL}`
     : '{current_scheme}://{current_host}:5000/app.html';
