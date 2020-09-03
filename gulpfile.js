@@ -246,6 +246,7 @@ function generateBootScript(manifest, { usingDevServer = false } = {}) {
 
   log(`version - ${version}`);
   log(`client version - ${process.env.CLIENT_VERSION}`);
+  log(`branch - ${teamcity.build.branch}`);
 
   if (isFirstBuild) {
     log(`Sidebar app URL: ${defaultSidebarAppUrl}`);
