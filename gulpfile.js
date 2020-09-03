@@ -230,9 +230,6 @@ let isFirstBuild = true;
 function generateBootScript(manifest, { usingDevServer = false } = {}) {
   const { version } = require('./package.json');
 
-  log(`version - ${version}`)
-  log(`client version - ${process.env.CLIENT_VERSION}`)
-
   const defaultSidebarAppUrl = process.env.SIDEBAR_APP_URL
     ? `${process.env.SIDEBAR_APP_URL}`
     : '{current_scheme}://{current_host}:5000/app.html';
@@ -246,6 +243,9 @@ function generateBootScript(manifest, { usingDevServer = false } = {}) {
     defaultAssetRoot = '{current_scheme}://{current_host}:3001/hypothesis';
   }
   defaultAssetRoot = `${defaultAssetRoot}/${version}/`;
+
+  log(`version - ${version}`);
+  log(`client version - ${process.env.CLIENT_VERSION}`);
 
   if (isFirstBuild) {
     log(`Sidebar app URL: ${defaultSidebarAppUrl}`);
