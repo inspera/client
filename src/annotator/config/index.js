@@ -45,11 +45,11 @@ export default function configFrom(window_) {
     externalContainerSelector: settings.hostPageSetting(
       'externalContainerSelector'
     ),
-    initialAnnotations: settings.hostPageSetting('initialAnnotations'),
     adderRange: settings.hostPageSetting('adderRange'),
     disableSidebar: settings.hostPageSetting('disableSidebar'),
     removeOnClick: settings.hostPageSetting('removeOnClick'),
     onAnnotationAdded: settings.hostPageSetting('onAnnotationAdded'),
     onAnnotationRemoved: settings.hostPageSetting('onAnnotationRemoved'),
+    refreshAnnotations: settings.hostPageSetting('refreshAnnotations'),
   };
 }
