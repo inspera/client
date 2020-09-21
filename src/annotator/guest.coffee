@@ -35,6 +35,7 @@ IGNORE_SELECTOR = '[class^="annotator-"],[class^="hypothesis-"]'
 
 module.exports = class Guest extends Delegator
   SHOW_HIGHLIGHTS_CLASS = 'hypothesis-highlights-always-on'
+  EVENT_HYPOTHESIS_PATH_CHANGE = 'Hypothesis:pathChange'
 
   # Events to be bound on Delegator#element.
   events:
@@ -67,8 +68,6 @@ module.exports = class Guest extends Delegator
     this.adder = $(this.html.adder).appendTo(@element).hide()
 
     self = this
-
-    this._addContentUpdateListener()
 
     this.adderCtrl = new adder.Adder(@adder[0], {
       onAnnotate: ->
@@ -115,6 +114,7 @@ module.exports = class Guest extends Delegator
     this._connectAnnotationSync(@crossframe)
     this._connectAnnotationUISync(@crossframe)
     this._refreshAnnotations()
+    this._addPlayerListener()
 
     # Load plugins
     for own name, opts of @options
@@ -197,18 +197,12 @@ module.exports = class Guest extends Delegator
     crossframe.on 'setVisibleHighlights', (state) =>
       this.setVisibleHighlights(state)
 
-  _addContentUpdateListener: ->
-    if !this.config.refreshAnnotations
-      return
-      
-    self = this
-    window.addEventListener("hashchange", () ->
-        self._refreshAnnotations()
-        return
-      , false);
-  
+  _addPlayerListener: ->
+    if this.config.refreshAnnotations 
+      window.addEventListener EVENT_HYPOTHESIS_PATH_CHANGE, this._refreshAnnotations.bind(this)
+
   _refreshAnnotations: ->
-    this._clearHighlighting()    
+    this._clearHighlighting()
 
     initialAnnotations = this.config.refreshAnnotations && this.config.refreshAnnotations() || []
     self = this
