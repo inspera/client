@@ -35,6 +35,7 @@ IGNORE_SELECTOR = '[class^="annotator-"],[class^="hypothesis-"]'
 
 module.exports = class Guest extends Delegator
   SHOW_HIGHLIGHTS_CLASS = 'hypothesis-highlights-always-on'
+  EVENT_HYPOTHESIS_PATH_CHANGE = 'Hypothesis:pathChange'
 
   # Events to be bound on Delegator#element.
   events:
@@ -67,6 +68,7 @@ module.exports = class Guest extends Delegator
     this.adder = $(this.html.adder).appendTo(@element).hide()
 
     self = this
+
     this.adderCtrl = new adder.Adder(@adder[0], {
       onAnnotate: ->
         self.createAnnotation()
@@ -111,11 +113,8 @@ module.exports = class Guest extends Delegator
 
     this._connectAnnotationSync(@crossframe)
     this._connectAnnotationUISync(@crossframe)
-
-    config.initialAnnotations && config.initialAnnotations.forEach((item) -> 
-      initAnchor = {target: [{selector: item}]}
-      self.anchor(initAnchor)
-    )
+    this._refreshAnnotations()
+    this._addPlayerListener()
 
     # Load plugins
     for own name, opts of @options
@@ -198,17 +197,40 @@ module.exports = class Guest extends Delegator
     crossframe.on 'setVisibleHighlights', (state) =>
       this.setVisibleHighlights(state)
 
+  _addPlayerListener: ->
+    if this.config.refreshAnnotations 
+      window.addEventListener EVENT_HYPOTHESIS_PATH_CHANGE, this._refreshAnnotations.bind(this)
+
+  _refreshAnnotations: ->
+    this._clearHighlighting()
+
+    initialAnnotations = this.config.refreshAnnotations && this.config.refreshAnnotations() || []
+    self = this
+    initialAnnotations.forEach (item) -> 
+      self.anchor({target: [{selector: item}]})
+      return
+
+  _composeExistingAnnotations: () ->
+    this.anchors
+      .filter((item) -> !!item.target)
+      .map((item) ->
+        item.target.selector
+      )
+
+  _clearHighlighting: () ->
+    @element.find('.hypothesis-highlight').each ->
+      $(this).contents().insertBefore(this)
+      $(this).remove()
+
+    @element.data('annotator', null)
+
   destroy: ->
     $('#annotator-dynamic-style').remove()
 
     this.selections.unsubscribe()
     @adder.remove()
 
-    @element.find('.hypothesis-highlight').each ->
-      $(this).contents().insertBefore(this)
-      $(this).remove()
-
-    @element.data('annotator', null)
+    this._clearHighlighting()
 
     for name, plugin of @plugins
       @plugins[name].destroy()
@@ -374,7 +396,7 @@ module.exports = class Guest extends Delegator
     targets.then(-> self.anchor(annotation))
     targets.then(-> 
       if annotation.target[0]
-        self.config.onAnnotationAdded(annotation.target[0].selector)
+        self.config.onAnnotationAdded(annotation.target[0].selector, !!annotation.$highlight)
     )
 
     @crossframe?.call('showSidebar') unless annotation.$highlight
@@ -545,10 +567,3 @@ module.exports = class Guest extends Delegator
 
     @visibleHighlights = shouldShowHighlights
     @toolbar?.highlightsVisible = shouldShowHighlights
-
-  _composeExistingAnnotations: () ->
-    this.anchors
-      .filter((item) -> !!item.target)
-      .map((item) ->
-        item.target.selector
-      )
