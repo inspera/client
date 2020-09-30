@@ -36,6 +36,7 @@ IGNORE_SELECTOR = '[class^="annotator-"],[class^="hypothesis-"]'
 module.exports = class Guest extends Delegator
   SHOW_HIGHLIGHTS_CLASS = 'hypothesis-highlights-always-on'
   EVENT_HYPOTHESIS_PATH_CHANGE = 'Hypothesis:pathChange'
+  EVENT_HYPOTHESIS_ANNOTATION_REMOVED = 'Hypothesis:annotationRemoved'
 
   # Events to be bound on Delegator#element.
   events:
@@ -79,6 +80,7 @@ module.exports = class Guest extends Delegator
         document.getSelection().removeAllRanges()
       onShowAnnotations: (anns) ->
         self.selectAnnotations(anns)
+      disableShowButton: !!config.disableShowButton
     })
     this.selections = selections(document).subscribe
       next: (range) ->
@@ -200,6 +202,7 @@ module.exports = class Guest extends Delegator
   _addPlayerListener: ->
     if this.config.refreshAnnotations 
       window.addEventListener EVENT_HYPOTHESIS_PATH_CHANGE, this._refreshAnnotations.bind(this)
+      window.addEventListener EVENT_HYPOTHESIS_ANNOTATION_REMOVED, this._refreshAnnotations.bind(this)
 
   _refreshAnnotations: ->
     this._clearHighlighting()
@@ -239,7 +242,8 @@ module.exports = class Guest extends Delegator
 
   anchor: (annotation) ->
     self = this
-    root = @element[0]
+    rootSelector = this.config.adderRange.root
+    root = rootSelector && @element[0].querySelector(rootSelector) || @element[0]
 
     # Anchors for all annotations are in the `anchors` instance property. These
     # are anchors for this annotation only. After all the targets have been
@@ -478,11 +482,11 @@ module.exports = class Guest extends Delegator
     this.adderCtrl.showAt(left, top, arrowDirection)
 
   _isIncluded: (element) ->
-    includeRange = this.config.adderRange.include
-    if !includeRange
+    rootSelector = this.config.adderRange.root
+    if !rootSelector
       return true
 
-    includeRange.some((item) -> element.closest(item))
+    !!element.closest(rootSelector)
 
   _isExcluded: (element) ->
     excludeRange = this.config.adderRange.exclude
@@ -549,11 +553,6 @@ module.exports = class Guest extends Delegator
     if event.target is event.currentTarget
       xor = (event.metaKey or event.ctrlKey)
       setTimeout => this.selectAnnotations(annotations, xor)
-
-    if this.config.removeOnClick
-      this.deleteAnnotation(annotation)
-      this.detach(annotation)
-      this.config.onAnnotationRemoved(annotation.target[0].selector)
 
   # Pass true to show the highlights in the frame or false to disable.
   setVisibleHighlights: (shouldShowHighlights) ->

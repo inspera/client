@@ -62,6 +62,7 @@ ToolbarButton.propTypes = {
  *   Number of annotations associated with the selected text.
  *   If non-zero, a "Show" button is displayed to allow the user to see the
  *   annotations that correspond to the selection.
+ * @prop {boolean} disableShowButton - whether to hide the show button
  */
 
 /**
@@ -75,6 +76,7 @@ export default function AdderToolbar({
   isVisible,
   onCommand,
   annotationCount = 0,
+  disableShowButton = false,
 }) {
   const handleCommand = (event, command) => {
     event.preventDefault();
@@ -116,10 +118,10 @@ export default function AdderToolbar({
           label="Highlight"
           shortcut={highlightShortcut}
         />
-        {annotationCount > 0 && (
+        {annotationCount > 0 && !disableShowButton && (
           <div className="annotator-adder-actions__separator" />
         )}
-        {annotationCount > 0 && (
+        {annotationCount > 0 && !disableShowButton && (
           <ToolbarButton
             badgeCount={annotationCount}
             onClick={e => handleCommand(e, 'show')}
@@ -139,4 +141,5 @@ AdderToolbar.propTypes = {
   isVisible: propTypes.bool.isRequired,
   onCommand: propTypes.func.isRequired,
   annotationCount: propTypes.number,
+  disableShowButton: propTypes.boolean,
 };

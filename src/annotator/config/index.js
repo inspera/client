@@ -47,9 +47,8 @@ export default function configFrom(window_) {
     ),
     adderRange: settings.hostPageSetting('adderRange'),
     disableSidebar: settings.hostPageSetting('disableSidebar'),
-    removeOnClick: settings.hostPageSetting('removeOnClick'),
+    disableShowButton: settings.hostPageSetting('disableShowButton'),
     onAnnotationAdded: settings.hostPageSetting('onAnnotationAdded'),
-    onAnnotationRemoved: settings.hostPageSetting('onAnnotationRemoved'),
     refreshAnnotations: settings.hostPageSetting('refreshAnnotations'),
   };
 }
