@@ -242,7 +242,7 @@ module.exports = class Guest extends Delegator
 
   anchor: (annotation) ->
     self = this
-    rootSelector = this.config.adderRange.root
+    rootSelector = this.config.adderRange?.root
     root = rootSelector && @element[0].querySelector(rootSelector) || @element[0]
 
     # Anchors for all annotations are in the `anchors` instance property. These
