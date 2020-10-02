@@ -106,7 +106,7 @@ describe('Adder', () => {
     });
 
     it('calls onAnnotate callback when Annotate button is clicked', () => {
-      const annotateBtn = getButton('Annotate');
+      const annotateBtn = getButton('Note');
       annotateBtn.dispatchEvent(new Event('click'));
       assert.called(adderCallbacks.onAnnotate);
     });
@@ -138,7 +138,7 @@ describe('Adder', () => {
 
     it("calls onAnnotate callback when Annotate button's label is clicked", () => {
       const annotateLabel = getContent(adderCtrl).querySelector(
-        'button[title^="Annotate"] > span'
+        'button[title^="Note"] > span'
       );
       annotateLabel.dispatchEvent(new Event('click', { bubbles: true }));
       assert.called(adderCallbacks.onAnnotate);
