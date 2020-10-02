@@ -79,6 +79,7 @@ module.exports = class Guest extends Delegator
         document.getSelection().removeAllRanges()
       onShowAnnotations: (anns) ->
         self.selectAnnotations(anns)
+      disableShowButton: !!config.disableShowButton
     })
     this.selections = selections(document).subscribe
       next: (range) ->

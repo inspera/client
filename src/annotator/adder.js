@@ -57,6 +57,7 @@ function nearestPositionedAncestor(el) {
  * @prop {() => any} onHighlight - Callback invoked when "Highlight" button is clicked
  * @prop {(annotations: Object[]) => any} onShowAnnotations -
  *   Callback invoked when  "Show" button is clicked
+ * @prop {boolean} disableShowButton - whether to hide the show button
  */
 
 /**
@@ -81,6 +82,7 @@ export class Adder {
   constructor(container, options) {
     this._container = container;
     this._shadowRoot = createShadowRoot(container);
+    this._disableShowButton = options.disableShowButton;
 
     // Set initial style
     Object.assign(container.style, {
@@ -245,6 +247,7 @@ export class Adder {
         arrowDirection={this._arrowDirection}
         onCommand={handleCommand}
         annotationCount={this.annotationsForSelection.length}
+        disableShowButton={this._disableShowButton}
       />,
       this._shadowRoot
     );
