@@ -48,6 +48,10 @@ function i18nService($rootScope, localStorage = window.localStorage) {
       'nb-NO': 'nb-NO-K12',
       'sv-SE': 'sv-SE-K12',
     },
+
+    fjord: {
+      'en-US': 'en-GB-fjord',
+    },
   };
 
   function loadResourceBundle() {

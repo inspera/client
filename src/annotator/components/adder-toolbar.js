@@ -6,6 +6,9 @@ import i18nService from '../../services/i18nService';
 import { useShortcut } from '../../shared/shortcut';
 import SvgIcon from '../../shared/components/svg-icon';
 
+const i18n = i18nService()
+i18n.initI18n()
+
 /**
  * @param {Object} props
  *  @param {number} [props.badgeCount]
@@ -79,7 +82,6 @@ export default function AdderToolbar({
   annotationCount = 0,
   disableShowButton = false,
 }) {
-  i18nService.initI18n()
   const handleCommand = (event, command) => {
     event.preventDefault();
     event.stopPropagation();
@@ -111,13 +113,13 @@ export default function AdderToolbar({
         <ToolbarButton
           icon="annotate"
           onClick={e => handleCommand(e, 'annotate')}
-          label={i18nService.tl('sidebar.buttons.annotate')}
+          label={i18n.tl('sidebar.buttons.annotate')}
           shortcut={annotateShortcut}
         />
         <ToolbarButton
           icon="highlight"
           onClick={e => handleCommand(e, 'highlight')}
-          label="Highlight"
+          label={i18n.tl('sidebar.buttons.highlight')}
           shortcut={highlightShortcut}
         />
         {annotationCount > 0 && !disableShowButton && (
