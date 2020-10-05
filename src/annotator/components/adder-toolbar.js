@@ -1,6 +1,7 @@
 import classnames from 'classnames';
 import { createElement } from 'preact';
 import propTypes from 'prop-types';
+import i18nService from '../../services/i18nService';
 
 import { useShortcut } from '../../shared/shortcut';
 import SvgIcon from '../../shared/components/svg-icon';
@@ -78,6 +79,7 @@ export default function AdderToolbar({
   annotationCount = 0,
   disableShowButton = false,
 }) {
+  i18nService.initI18n()
   const handleCommand = (event, command) => {
     event.preventDefault();
     event.stopPropagation();
@@ -109,7 +111,7 @@ export default function AdderToolbar({
         <ToolbarButton
           icon="annotate"
           onClick={e => handleCommand(e, 'annotate')}
-          label="Note"
+          label={i18nService.tl('sidebar.buttons.annotate')}
           shortcut={annotateShortcut}
         />
         <ToolbarButton

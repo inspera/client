@@ -57,7 +57,9 @@
     "gulp-changed": "^4.0.0",
     "gulp-rename": "^2.0.0",
     "gulp-replace": "^1.0.0",
+    "groom": "^1.1.1",
     "hammerjs": "^2.0.4",
+    "i18next": "^19.7.0",
     "jquery": "^3.2.1",
     "js-polyfills": "^0.1.16",
     "karma": "^5.0.1",
@@ -72,6 +74,7 @@
     "lodash.debounce": "^4.0.3",
     "loose-envify": "^1.4.0",
     "mocha": "8.1.1",
+    "moment": "^2.29.0",
     "mustache": "^4.0.1",
     "npm-packlist": "^2.0.1",
     "postcss": "^7.0.13",
@@ -84,6 +87,8 @@
     "redux-thunk": "^2.1.0",
     "reselect": "^4.0.0",
     "retry": "^0.12.0",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.6",
     "sass": "^1.23.0",
     "scroll-into-view": "^1.8.2",
     "shallowequal": "^1.1.0",
@@ -101,6 +106,9 @@
     "wicked-good-xpath": "^1.3.0",
     "wrap-text": "^1.0.7",
     "zen-observable": "^0.3.0"
+  },
+  "dependencies": {
+    "deepmerge": "^4.2.2"
   },
   "browserify": {
     "transform": [
@@ -124,6 +132,7 @@
   },
   "main": "./build/boot.js",
   "scripts": {
+    "captions": "gulp captions",
     "build": "cross-env NODE_ENV=production gulp build",
     "build:dev": "cross-env gulp build",
     "serve": "cross-env gulp serve-package",
