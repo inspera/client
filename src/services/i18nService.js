@@ -1,5 +1,5 @@
-const i18next = require('i18next');
-const deepmerge = require('deepmerge');
+import i18next from 'i18next';
+import deepmerge from 'deepmerge';
 
 const localStorage = window.localStorage;
 const fallbackLanguage = 'en-US';
