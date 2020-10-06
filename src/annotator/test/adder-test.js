@@ -1,6 +1,9 @@
 import { act } from 'preact/test-utils';
+import i18nService, { t } from '../../services/i18nService';
 
 import { Adder, ARROW_POINTING_UP, ARROW_POINTING_DOWN } from '../adder';
+
+i18nService.initI18n();
 
 function rect(left, top, width, height) {
   return { left: left, top: top, width: width, height: height };
@@ -100,13 +103,13 @@ describe('Adder', () => {
     };
 
     it('calls onHighlight callback when Highlight button is clicked', () => {
-      const highlightBtn = getButton('Highlight');
+      const highlightBtn = getButton(t('sidebar.buttons.highlight'));
       highlightBtn.dispatchEvent(new Event('click'));
       assert.called(adderCallbacks.onHighlight);
     });
 
     it('calls onAnnotate callback when Annotate button is clicked', () => {
-      const annotateBtn = getButton('Note');
+      const annotateBtn = getButton(t('sidebar.buttons.annotate'));
       annotateBtn.dispatchEvent(new Event('click'));
       assert.called(adderCallbacks.onAnnotate);
     });
@@ -137,9 +140,8 @@ describe('Adder', () => {
     });
 
     it("calls onAnnotate callback when Annotate button's label is clicked", () => {
-      const annotateLabel = getContent(adderCtrl).querySelector(
-        'button[title^="Note"] > span'
-      );
+      const annotateBtn = getButton(t('sidebar.buttons.annotate'));
+      const annotateLabel = annotateBtn.querySelector('span');
       annotateLabel.dispatchEvent(new Event('click', { bubbles: true }));
       assert.called(adderCallbacks.onAnnotate);
     });
