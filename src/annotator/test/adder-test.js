@@ -85,8 +85,7 @@ describe('Adder', () => {
   });
 
   describe('button handling', () => {
-    const getButton = id =>
-      getContent(adderCtrl).getElementById(id)
+    const getButton = id => getContent(adderCtrl).getElementById(id);
 
     const triggerShortcut = key =>
       document.body.dispatchEvent(new KeyboardEvent('keydown', { key }));

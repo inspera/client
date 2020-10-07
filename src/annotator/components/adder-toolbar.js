@@ -114,7 +114,7 @@ export default function AdderToolbar({
       <hypothesis-adder-actions className="annotator-adder-actions">
         <ToolbarButton
           id="annotate-adder-button"
-          icon='annotate'
+          icon="annotate"
           onClick={e => handleCommand(e, 'annotate')}
           label={captions.annotate || 'annotate'}
           shortcut={annotateShortcut}
