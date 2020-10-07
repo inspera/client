@@ -2,7 +2,7 @@
 
 'use strict';
 
-const fs = require('fs');
+const { mkdirSync } = require('fs');
 const path = require('path');
 
 const changed = require('gulp-changed');
@@ -159,7 +159,7 @@ const cssBundles = [
 ];
 
 gulp.task('build-css', function () {
-  fs.mkdirSync(STYLE_DIR, { recursive: true });
+  mkdirSync(STYLE_DIR, { recursive: true });
   const bundles = cssBundles.map(entry =>
     createStyleBundle({
       input: entry,

@@ -1,7 +1,6 @@
 import classnames from 'classnames';
 import { createElement } from 'preact';
 import propTypes from 'prop-types';
-// import { tr } from '../../services/captionsService';
 
 import { useShortcut } from '../../shared/shortcut';
 import SvgIcon from '../../shared/components/svg-icon';
