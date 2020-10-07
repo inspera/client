@@ -2,9 +2,6 @@
 
 'use strict';
 
-const request = require('request-promise');
-const mkdirp = require('mkdirp');
-const groom = require('groom');
 const fs = require('fs');
 const path = require('path');
 
@@ -27,77 +24,6 @@ const SCRIPT_DIR = 'build/scripts';
 const STYLE_DIR = 'build/styles';
 const FONTS_DIR = 'build/fonts';
 const IMAGES_DIR = 'build/images';
-
-const webtranslateit = 'https://webtranslateit.com/api/projects/';
-const webtranslateitReadKey = process.env.WEBTRANSLATEITREADKEY;
-const captionFiles = {
-  prodFile: '771777',
-  locales: [
-    'en-US',
-    'nb-NO',
-    'nn-NO',
-    'sv-SE',
-    'pl-PL',
-    'es-CO',
-    'en-GB-K12',
-    'sv-SE-K12',
-    'nb-NO-K12',
-    'nn-NO-K12',
-    'en-GB-fjord',
-    'nl-NL',
-  ],
-};
-
-function webTranslateFile(key, file, locale) {
-  return {
-    uri: `${webtranslateit}${key}/files/${file}/locales/${locale}`,
-    json: true,
-  };
-}
-function fetchFile(source) {
-  return request(source, error => {
-    if (error !== null) {
-      process.stdout.write(error);
-    }
-  });
-}
-
-function fetchTranslationFile(locale) {
-  return fetchFile(
-    webTranslateFile(webtranslateitReadKey, captionFiles.prodFile, locale)
-  ).then(translation => ({ locale, translation }));
-}
-
-function addTranslationForLocale(locale, translation, accumulator) {
-  accumulator[locale] = {
-    translation: groom(translation),
-  };
-  return accumulator;
-}
-
-function makeSureTheI18nFolderExists() {
-  if (!fs.existsSync('i18n')) {
-    mkdirp('i18n');
-  }
-}
-
-function fetchCaptions(data) {
-  makeSureTheI18nFolderExists();
-
-  const promises = data.locales.map(locale => fetchTranslationFile(locale));
-
-  Promise.all(promises).then(translations => {
-    const translationsPackage = translations.reduce(
-      (accumulator, { locale, translation }) => {
-        return addTranslationForLocale(locale, translation, accumulator);
-      },
-      {}
-    );
-
-    fs.writeFileSync('i18n/index.json', JSON.stringify(translationsPackage));
-    return true;
-  });
-}
 
 function parseCommandLine() {
   commander
@@ -378,21 +304,12 @@ gulp.task('serve-test-pages', function () {
   });
 });
 
-/* Loading captions from webtranslateit */
-gulp.task('captions', done => {
-  fetchCaptions(captionFiles);
-  done();
-});
-
-const buildTasks = ['build-js', 'build-css'];
-
-if (IS_PRODUCTION_BUILD) {
-  buildTasks.push('build-fonts');
-  buildTasks.push('build-images');
-  buildTasks.push('captions');
-}
-
-const buildAssets = gulp.parallel(buildTasks);
+const buildAssets = gulp.parallel(
+  'build-js',
+  'build-css',
+  'build-fonts',
+  'build-images'
+);
 gulp.task('build', gulp.series(buildAssets, generateManifest));
 
 gulp.task(

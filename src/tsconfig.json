@@ -9,8 +9,6 @@
     "noEmit": true,
     "strictNullChecks": true,
     "target": "ES2020",
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
   },
   "include": [
     "**/*.js"

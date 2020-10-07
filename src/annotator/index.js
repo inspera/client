@@ -35,7 +35,6 @@ import CrossFramePlugin from './plugin/cross-frame';
 import PDFPlugin from './plugin/pdf';
 // @ts-expect-error
 import Sidebar from './sidebar';
-import i18nService from '../services/i18nService';
 
 const pluginClasses = {
   // UI plugins
@@ -60,7 +59,6 @@ const appLinkEl = /** @type {Element} */ (document.querySelector(
 const config = configFrom(window);
 
 $.noConflict(true)(function () {
-  i18nService.initI18n();
   const isPDF = typeof window_.PDFViewerApplication !== 'undefined';
 
   let Klass = isPDF ? PdfSidebar : Sidebar;
