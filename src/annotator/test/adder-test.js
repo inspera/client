@@ -85,8 +85,7 @@ describe('Adder', () => {
   });
 
   describe('button handling', () => {
-    const getButton = label =>
-      getContent(adderCtrl).querySelector(`button[title^="${label}"]`);
+    const getButton = id => getContent(adderCtrl).getElementById(id);
 
     const triggerShortcut = key =>
       document.body.dispatchEvent(new KeyboardEvent('keydown', { key }));
@@ -100,27 +99,27 @@ describe('Adder', () => {
     };
 
     it('calls onHighlight callback when Highlight button is clicked', () => {
-      const highlightBtn = getButton('Highlight');
+      const highlightBtn = getButton('highlight-adder-button');
       highlightBtn.dispatchEvent(new Event('click'));
       assert.called(adderCallbacks.onHighlight);
     });
 
     it('calls onAnnotate callback when Annotate button is clicked', () => {
-      const annotateBtn = getButton('Note');
+      const annotateBtn = getButton('annotate-adder-button');
       annotateBtn.dispatchEvent(new Event('click'));
       assert.called(adderCallbacks.onAnnotate);
     });
 
     it('does not show "Show" button if the selection has no annotations', () => {
       showAdder();
-      assert.isNull(getButton('Show'));
+      assert.isNull(getButton('show-adder-button'));
     });
 
     it('shows the "Show" button if the selection has annotations', () => {
       adderCtrl.annotationsForSelection = ['ann1', 'ann2'];
       showAdder();
 
-      const showBtn = getButton('Show');
+      const showBtn = getButton('show-adder-button');
       assert.ok(showBtn, '"Show" button not visible');
       assert.equal(showBtn.querySelector('span').textContent, '2');
     });
@@ -128,7 +127,7 @@ describe('Adder', () => {
     it('calls onShowAnnotations callback when Show button is clicked', () => {
       adderCtrl.annotationsForSelection = ['ann1'];
       showAdder();
-      const showBtn = getButton('Show');
+      const showBtn = getButton('show-adder-button');
 
       showBtn.click();
 
@@ -137,9 +136,8 @@ describe('Adder', () => {
     });
 
     it("calls onAnnotate callback when Annotate button's label is clicked", () => {
-      const annotateLabel = getContent(adderCtrl).querySelector(
-        'button[title^="Note"] > span'
-      );
+      const annotateBtn = getButton('annotate-adder-button');
+      const annotateLabel = annotateBtn.querySelector('span');
       annotateLabel.dispatchEvent(new Event('click', { bubbles: true }));
       assert.called(adderCallbacks.onAnnotate);
     });

@@ -7,19 +7,21 @@ import SvgIcon from '../../shared/components/svg-icon';
 
 /**
  * @param {Object} props
+ *  @param {string} [props.id]
  *  @param {number} [props.badgeCount]
  *  @param {string} [props.icon]
  *  @param {string} props.label
  *  @param {() => any} props.onClick
  *  @param {string|null} props.shortcut
  */
-function ToolbarButton({ badgeCount, icon, label, onClick, shortcut }) {
+function ToolbarButton({ id, badgeCount, icon, label, onClick, shortcut }) {
   useShortcut(shortcut, onClick);
 
   const title = shortcut ? `${label} (${shortcut})` : label;
 
   return (
     <button
+      id={id}
       className="annotator-adder-actions__button"
       onClick={onClick}
       aria-label={title}
@@ -37,6 +39,7 @@ function ToolbarButton({ badgeCount, icon, label, onClick, shortcut }) {
 }
 
 ToolbarButton.propTypes = {
+  id: propTypes.string,
   badgeCount: propTypes.number,
   icon: propTypes.string,
   label: propTypes.string.isRequired,
@@ -63,6 +66,7 @@ ToolbarButton.propTypes = {
  *   If non-zero, a "Show" button is displayed to allow the user to see the
  *   annotations that correspond to the selection.
  * @prop {boolean} disableShowButton - whether to hide the show button
+ * @prop {object} captions - translated captions
  */
 
 /**
@@ -77,6 +81,7 @@ export default function AdderToolbar({
   onCommand,
   annotationCount = 0,
   disableShowButton = false,
+  captions = {},
 }) {
   const handleCommand = (event, command) => {
     event.preventDefault();
@@ -107,15 +112,17 @@ export default function AdderToolbar({
       {/* @ts-ignore */}
       <hypothesis-adder-actions className="annotator-adder-actions">
         <ToolbarButton
+          id="annotate-adder-button"
           icon="annotate"
           onClick={e => handleCommand(e, 'annotate')}
-          label="Note"
+          label={captions.annotate || 'annotate'}
           shortcut={annotateShortcut}
         />
         <ToolbarButton
+          id="highlight-adder-button"
           icon="highlight"
           onClick={e => handleCommand(e, 'highlight')}
-          label="Highlight"
+          label={captions.highlight || 'highlight'}
           shortcut={highlightShortcut}
         />
         {annotationCount > 0 && !disableShowButton && (
@@ -123,9 +130,10 @@ export default function AdderToolbar({
         )}
         {annotationCount > 0 && !disableShowButton && (
           <ToolbarButton
+            id="show-adder-button"
             badgeCount={annotationCount}
             onClick={e => handleCommand(e, 'show')}
-            label="Show"
+            label={captions.show || 'show'}
             shortcut={showShortcut}
           />
         )}
@@ -142,4 +150,5 @@ AdderToolbar.propTypes = {
   onCommand: propTypes.func.isRequired,
   annotationCount: propTypes.number,
   disableShowButton: propTypes.boolean,
+  captions: propTypes.object,
 };

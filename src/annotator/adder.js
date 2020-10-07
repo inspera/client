@@ -58,6 +58,7 @@ function nearestPositionedAncestor(el) {
  * @prop {(annotations: Object[]) => any} onShowAnnotations -
  *   Callback invoked when  "Show" button is clicked
  * @prop {boolean} disableShowButton - whether to hide the show button
+ * @prop {Object} captions - translated captions
  */
 
 /**
@@ -83,6 +84,7 @@ export class Adder {
     this._container = container;
     this._shadowRoot = createShadowRoot(container);
     this._disableShowButton = options.disableShowButton;
+    this._captions = options.captions;
 
     // Set initial style
     Object.assign(container.style, {
@@ -248,6 +250,7 @@ export class Adder {
         onCommand={handleCommand}
         annotationCount={this.annotationsForSelection.length}
         disableShowButton={this._disableShowButton}
+        captions={this._captions}
       />,
       this._shadowRoot
     );
