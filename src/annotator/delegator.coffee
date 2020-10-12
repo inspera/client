@@ -49,6 +49,8 @@ module.exports = class Delegator
     @_closures = {}
 
     this.on = this.subscribe
+
+  init: ->
     this.addEvents()
 
 # Public: Destroy the instance, unbinding all events.
