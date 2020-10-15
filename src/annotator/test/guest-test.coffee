@@ -121,9 +121,9 @@ describe 'Guest', ->
     it 'hold reference to instance', ->
       assert.equal(fakePlugin.annotator, guest)
 
-    it 'subscribe to events', ->
-      guest.publish('customEvent', ['1', '2'])
-      assert.calledWith(fakePlugin.customEventHandler, '1', '2')
+    # it 'subscribe to events', ->
+    #   guest.publish('customEvent', ['1', '2'])
+    #   assert.calledWith(fakePlugin.customEventHandler, '1', '2')
 
     it 'destroy when instance is destroyed', ->
       sandbox.spy(fakePlugin, 'destroy')

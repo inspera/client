@@ -35,7 +35,8 @@ IGNORE_SELECTOR = '[class^="annotator-"],[class^="hypothesis-"]'
 
 module.exports = class Guest extends Delegator
   SHOW_HIGHLIGHTS_CLASS = 'hypothesis-highlights-always-on'
-  EVENT_HYPOTHESIS_PATH_CHANGE = 'Hypothesis:pathChange'
+  EVENT_HYPOTHESIS_DESTROY = 'Hypothesis:destroy'
+  EVENT_HYPOTHESIS_INIT = 'Hypothesis:init'
 
   # Events to be bound on Delegator#element.
   events:
@@ -65,6 +66,18 @@ module.exports = class Guest extends Delegator
     super
 
     this.config = config
+    this.anchoring = anchoring
+
+    this.init()
+    this._addPlayerListener()
+
+  init: () ->
+    if this.active
+      # just refresh annotations if the lib is already active
+      this._refreshAnnotations()
+      return
+
+    super
     this.adder = $(this.html.adder).appendTo(@element).hide()
 
     self = this
@@ -79,8 +92,8 @@ module.exports = class Guest extends Delegator
         document.getSelection().removeAllRanges()
       onShowAnnotations: (anns) ->
         self.selectAnnotations(anns)
-      disableShowButton: !!config.disableShowButton,
-      captions: config.captions
+      disableShowButton: !!this.config.disableShowButton,
+      captions: this.config.captions
     })
     this.selections = selections(document).subscribe
       next: (range) ->
@@ -94,12 +107,10 @@ module.exports = class Guest extends Delegator
 
     # Set the frame identifier if it's available.
     # The "top" guest instance will have this as null since it's in a top frame not a sub frame
-    this.frameIdentifier = config.subFrameIdentifier || null
-
-    this.anchoring = anchoring
+    this.frameIdentifier = this.config.subFrameIdentifier || null
 
     cfOptions =
-      config: config
+      config: this.config
       on: (event, handler) =>
         this.subscribe(event, handler)
       emit: (event, args...) =>
@@ -108,20 +119,21 @@ module.exports = class Guest extends Delegator
     this.addPlugin('CrossFrame', cfOptions)
     @crossframe = this.plugins.CrossFrame
 
-    if config.disableSidebar
-      this._setupInitialState(config)
+    if this.config.disableSidebar
+      this._setupInitialState(this.config)
     else
-      @crossframe.onConnect(=> this._setupInitialState(config))
+      @crossframe.onConnect(=> this._setupInitialState(self.config))
 
     this._connectAnnotationSync(@crossframe)
     this._connectAnnotationUISync(@crossframe)
-    this._refreshAnnotations()
-    this._addPlayerListener()
 
     # Load plugins
     for own name, opts of @options
       if not @plugins[name] and @options.pluginClasses[name]
         this.addPlugin(name, opts)
+
+    this.active = true
+    this._refreshAnnotations()
 
   addPlugin: (name, options) ->
     if @plugins[name]
@@ -200,8 +212,8 @@ module.exports = class Guest extends Delegator
       this.setVisibleHighlights(state)
 
   _addPlayerListener: ->
-    if this.config.refreshAnnotations 
-      window.addEventListener EVENT_HYPOTHESIS_PATH_CHANGE, this._refreshAnnotations.bind(this)
+    window.addEventListener EVENT_HYPOTHESIS_DESTROY, this.destroy.bind(this)
+    window.addEventListener EVENT_HYPOTHESIS_INIT, this.init.bind(this)
 
   _refreshAnnotations: ->
     this._clearHighlighting()
@@ -238,6 +250,7 @@ module.exports = class Guest extends Delegator
       @plugins[name].destroy()
 
     super
+    this.active = false
 
   anchor: (annotation) ->
     self = this
