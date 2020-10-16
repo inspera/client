@@ -35,11 +35,9 @@ IGNORE_SELECTOR = '[class^="annotator-"],[class^="hypothesis-"]'
 
 module.exports = class Guest extends Delegator
   SHOW_HIGHLIGHTS_CLASS = 'hypothesis-highlights-always-on'
-  EVENT_HYPOTHESIS_DESTROY = 'Hypothesis:destroy'
   EVENT_HYPOTHESIS_INIT = 'Hypothesis:init'
   EVENT_HYPOTHESIS_ANNOTATION_REMOVED = 'Hypothesis:annotationRemoved'
   EVENT_HYPOTHESIS_DESTROY = 'Hypothesis:destroy'
-  EVENT_HYPOTHESIS_INIT = 'Hypothesis:init'
 
   # Events to be bound on Delegator#element.
   events:
