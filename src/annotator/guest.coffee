@@ -35,8 +35,9 @@ IGNORE_SELECTOR = '[class^="annotator-"],[class^="hypothesis-"]'
 
 module.exports = class Guest extends Delegator
   SHOW_HIGHLIGHTS_CLASS = 'hypothesis-highlights-always-on'
-  EVENT_HYPOTHESIS_DESTROY = 'Hypothesis:destroy'
   EVENT_HYPOTHESIS_INIT = 'Hypothesis:init'
+  EVENT_HYPOTHESIS_ANNOTATION_REMOVED = 'Hypothesis:annotationRemoved'
+  EVENT_HYPOTHESIS_DESTROY = 'Hypothesis:destroy'
 
   # Events to be bound on Delegator#element.
   events:
@@ -212,6 +213,7 @@ module.exports = class Guest extends Delegator
       this.setVisibleHighlights(state)
 
   _addPlayerListener: ->
+    window.addEventListener EVENT_HYPOTHESIS_ANNOTATION_REMOVED, this._refreshAnnotations.bind(this)
     window.addEventListener EVENT_HYPOTHESIS_DESTROY, this.destroy.bind(this)
     window.addEventListener EVENT_HYPOTHESIS_INIT, this.init.bind(this)
 
@@ -254,7 +256,8 @@ module.exports = class Guest extends Delegator
 
   anchor: (annotation) ->
     self = this
-    root = @element[0]
+    rootSelector = this.config.adderRange?.root
+    root = rootSelector && @element[0].querySelector(rootSelector) || @element[0]
 
     # Anchors for all annotations are in the `anchors` instance property. These
     # are anchors for this annotation only. After all the targets have been
@@ -493,11 +496,11 @@ module.exports = class Guest extends Delegator
     this.adderCtrl.showAt(left, top, arrowDirection)
 
   _isIncluded: (element) ->
-    includeRange = this.config.adderRange.include
-    if !includeRange
+    rootSelector = this.config.adderRange.root
+    if !rootSelector
       return true
 
-    includeRange.some((item) -> element.closest(item))
+    !!element.closest(rootSelector)
 
   _isExcluded: (element) ->
     excludeRange = this.config.adderRange.exclude
@@ -564,11 +567,6 @@ module.exports = class Guest extends Delegator
     if event.target is event.currentTarget
       xor = (event.metaKey or event.ctrlKey)
       setTimeout => this.selectAnnotations(annotations, xor)
-
-    if this.config.removeOnClick
-      this.deleteAnnotation(annotation)
-      this.detach(annotation)
-      this.config.onAnnotationRemoved(annotation.target[0].selector)
 
   # Pass true to show the highlights in the frame or false to disable.
   setVisibleHighlights: (shouldShowHighlights) ->

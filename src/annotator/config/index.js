@@ -51,7 +51,6 @@ export default function configFrom(window_) {
     disableShowButton: settings.hostPageSetting('disableShowButton'),
     removeOnClick: settings.hostPageSetting('removeOnClick'),
     onAnnotationAdded: settings.hostPageSetting('onAnnotationAdded'),
-    onAnnotationRemoved: settings.hostPageSetting('onAnnotationRemoved'),
     refreshAnnotations: settings.hostPageSetting('refreshAnnotations'),
   };
 }
