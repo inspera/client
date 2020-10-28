@@ -12,6 +12,7 @@ rangeUtil = require('./range-util')
 xpathRange = require('./anchoring/range')
 { closest } = require('../shared/dom-element')
 { normalizeURI } = require('./util/url')
+isEqual = require('underscore/cjs/isEqual.js')
 
 animationPromise = (fn) ->
   return new Promise (resolve, reject) ->
@@ -38,6 +39,8 @@ module.exports = class Guest extends Delegator
   EVENT_HYPOTHESIS_INIT = 'Hypothesis:init'
   EVENT_HYPOTHESIS_ANNOTATION_REMOVED = 'Hypothesis:annotationRemoved'
   EVENT_HYPOTHESIS_DESTROY = 'Hypothesis:destroy'
+  EVENT_HYPOTHESIS_REQUEST_ANNOTATION_NODE = 'Hypothesis:requestAnnotationNode'
+  EVENT_HYPOTHESIS_SEND_ANNOTATION_NODE = 'Hypothesis:sendAnnotationNode'
 
   # Events to be bound on Delegator#element.
   events:
@@ -71,6 +74,15 @@ module.exports = class Guest extends Delegator
 
     this.init()
     this._addPlayerListener()
+
+  getAnnotationNode: (event) ->
+    incomingSelector = event.detail.selector
+
+    for anchor in @anchors when anchor.highlights?
+      if isEqual(incomingSelector, anchor.target.selector)
+        window.dispatchEvent(
+          new CustomEvent(EVENT_HYPOTHESIS_SEND_ANNOTATION_NODE, { detail: { highlight: anchor.highlights[0] } })
+        )
 
   init: () ->
     if this.active
@@ -216,6 +228,7 @@ module.exports = class Guest extends Delegator
     window.addEventListener EVENT_HYPOTHESIS_ANNOTATION_REMOVED, this._refreshAnnotations.bind(this)
     window.addEventListener EVENT_HYPOTHESIS_DESTROY, this.destroy.bind(this)
     window.addEventListener EVENT_HYPOTHESIS_INIT, this.init.bind(this)
+    window.addEventListener EVENT_HYPOTHESIS_REQUEST_ANNOTATION_NODE, this.getAnnotationNode.bind(this)
 
   _refreshAnnotations: ->
     this._clearHighlighting()
