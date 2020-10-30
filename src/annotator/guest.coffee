@@ -105,7 +105,7 @@ module.exports = class Guest extends Delegator
       if @equalSelectors(selector, anchor.target.selector)
         anchor.highlights[0].classList.add('selected')
 
-  focusAnnotation: (event) ->
+  scrollAndHighlightAnnotation: (event) ->
     incomingSelector = event.detail.selector
 
     for anchor in @anchors when anchor.highlights?
@@ -237,14 +237,7 @@ module.exports = class Guest extends Delegator
     crossframe.on 'scrollToAnnotation', (tag) =>
       for anchor in @anchors when anchor.highlights?
         if anchor.annotation.$tag is tag
-          event = new CustomEvent('scrolltorange', {
-            bubbles: true
-            cancelable: true
-            detail: anchor.range
-          })
-          defaultNotPrevented = @element[0].dispatchEvent(event)
-          if defaultNotPrevented
-            scrollIntoView(anchor.highlights[0])
+          @scrollToAnnotation(anchor);
 
     crossframe.on 'getDocumentInfo', (cb) =>
       this.getDocumentInfo()
@@ -258,7 +251,7 @@ module.exports = class Guest extends Delegator
     window.addEventListener EVENT_HYPOTHESIS_ANNOTATION_REMOVED, this._refreshAnnotations.bind(this)
     window.addEventListener EVENT_HYPOTHESIS_DESTROY, this.destroy.bind(this)
     window.addEventListener EVENT_HYPOTHESIS_INIT, this.init.bind(this)
-    window.addEventListener EVENT_HYPOTHESIS_FOCUS_ANNOTATION, this.focusAnnotation.bind(this)
+    window.addEventListener EVENT_HYPOTHESIS_FOCUS_ANNOTATION, this.scrollAndHighlightAnnotation.bind(this)
 
   _refreshAnnotations: ->
     this._clearHighlighting()
