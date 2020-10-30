@@ -73,18 +73,6 @@ module.exports = class Guest extends Delegator
     this.init()
     this._addPlayerListener()
 
-  getSelectorByType = (selectors, type) ->
-    selectors.find (selector) ->
-      selector.type == type
-
-  equalSelectors: (leftSelectors, rightSelectors) ->
-    leftSelectors.every (leftSelector) ->
-      rightSelector = getSelectorByType(rightSelectors, leftSelector.type)
-      if !rightSelector
-        return false
-      Object.keys(leftSelector).every (selectorKey) ->
-        leftSelector[selectorKey] == rightSelector[selectorKey]
-
   scrollToAnnotation: (anchor) ->
     event = new CustomEvent('scrolltorange', {
       bubbles: true
@@ -102,14 +90,14 @@ module.exports = class Guest extends Delegator
       return
 
     for anchor in @anchors when anchor.highlights?
-      if @equalSelectors(selector, anchor.target.selector)
+      if JSON.stringify(selector) == JSON.stringify(anchor.target.selector)
         anchor.highlights[0].classList.add('selected')
 
   scrollAndHighlightAnnotation: (event) ->
     incomingSelector = event.detail.selector
 
     for anchor in @anchors when anchor.highlights?
-      if @equalSelectors(incomingSelector, anchor.target.selector)
+      if JSON.stringify(incomingSelector) == JSON.stringify(anchor.target.selector)
         @scrollToAnnotation(anchor)
 
     @highlightSelected(incomingSelector)
