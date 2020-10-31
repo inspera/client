@@ -583,13 +583,17 @@ module.exports = class Guest extends Delegator
 
   onHighlightClick: (event) ->
     self = this
-    selector = $(event.currentTarget).data('annotation').target[0].selector
+    selector
 
-    this.config.onAnnotationClick(selector)
-    setTimeout (->
-      self.highlightSelected(selector)
-      return
-    ), 500
+    if $(event.currentTarget).data('annotation')
+      selector = $(event.currentTarget).data('annotation').target[0].selector
+
+    if selector
+      this.config.onAnnotationClick(selector)
+      setTimeout (->
+        self.highlightSelected(selector)
+        return
+      ), 500
 
     return unless @visibleHighlights
     annotation = $(event.currentTarget).data('annotation')
