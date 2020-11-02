@@ -85,7 +85,7 @@ module.exports = class Guest extends Delegator
 
   highlightSelected: (selector) ->
     annotationNodesList = document.getElementsByClassName('hypothesis-highlight')
-    [].forEach.call annotationNodesList, (el) ->
+    Object.values(annotationNodesList).forEach.call annotationNodesList, (el) ->
       el.classList.remove 'selected'
       return
 
