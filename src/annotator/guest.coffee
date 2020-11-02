@@ -583,7 +583,6 @@ module.exports = class Guest extends Delegator
 
   onHighlightClick: (event) ->
     self = this
-    selector
 
     if $(event.currentTarget).data('annotation')
       selector = $(event.currentTarget).data('annotation').target[0].selector
