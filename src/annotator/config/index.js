@@ -52,5 +52,6 @@ export default function configFrom(window_) {
     removeOnClick: settings.hostPageSetting('removeOnClick'),
     onAnnotationAdded: settings.hostPageSetting('onAnnotationAdded'),
     refreshAnnotations: settings.hostPageSetting('refreshAnnotations'),
+    onAnnotationClick: settings.hostPageSetting('onAnnotationClick'),
   };
 }
