@@ -196,7 +196,7 @@ export function highlightRange(normedRange, exclude = [], cssClass = 'hypothesis
   // inserting highlight elements in places that can only contain a restricted
   // subset of nodes such as table rows and lists.
   textNodeSpans = textNodeSpans.filter(span =>
-    // Check for at least one text node with non-space content.
+    // Check for at least one text node with non-space content and parents are not excluded
     (exclude.every(item => !span[0].parentNode.closest(item)) && span.some(node => !white.test(node.nodeValue)))
   );
 
