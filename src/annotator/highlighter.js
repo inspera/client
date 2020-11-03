@@ -157,10 +157,15 @@ function drawHighlightsAbovePdfCanvas(highlightEl) {
  * element of the specified class and returns the highlight Elements.
  *
  * @param {NormalizedRange} normedRange - Range to be highlighted.
+ * @param {[]} exclude - selectors to exclude from higlighting
  * @param {string} cssClass - A CSS class to use for the highlight
  * @return {HighlightElement[]} - Elements wrapping text in `normedRange` to add a highlight effect
  */
-export function highlightRange(normedRange, cssClass = 'hypothesis-highlight') {
+export function highlightRange(
+  normedRange,
+  exclude = [],
+  cssClass = 'hypothesis-highlight'
+) {
   const white = /^\s*$/;
 
   // Find text nodes within the range to highlight.
@@ -194,9 +199,11 @@ export function highlightRange(normedRange, cssClass = 'hypothesis-highlight') {
   // Filter out text node spans that consist only of white space. This avoids
   // inserting highlight elements in places that can only contain a restricted
   // subset of nodes such as table rows and lists.
-  textNodeSpans = textNodeSpans.filter(span =>
-    // Check for at least one text node with non-space content.
-    span.some(node => !white.test(node.nodeValue))
+  textNodeSpans = textNodeSpans.filter(
+    span =>
+      // Check for at least one text node with non-space content and parents are not excluded
+      exclude.every(item => !span[0].parentNode.closest(item)) &&
+      span.some(node => !white.test(node.nodeValue))
   );
 
   // Wrap each text node span with a `<hypothesis-highlight>` element.
