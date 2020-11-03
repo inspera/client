@@ -587,7 +587,7 @@ module.exports = class Guest extends Delegator
     if $(event.currentTarget).data('annotation')
       selector = $(event.currentTarget).data('annotation').target[0].selector
 
-    if selector
+    if selector && this.config.onAnnotationClick
       this.config.onAnnotationClick(selector)
       setTimeout (->
         self.highlightSelected(selector)
