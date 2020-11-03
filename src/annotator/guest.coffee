@@ -303,7 +303,7 @@ module.exports = class Guest extends Delegator
       return animationPromise ->
         range = xpathRange.sniff(anchor.range)
         normedRange = range.normalize(root)
-        highlights = highlighter.highlightRange(normedRange)
+        highlights = highlighter.highlightRange(normedRange, self.config.adderRange?.exclude)
 
         $(highlights).data('annotation', anchor.annotation)
         anchor.highlights = highlights
