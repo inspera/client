@@ -93,14 +93,15 @@ module.exports = class Guest extends Delegator
       if JSON.stringify(selector) == JSON.stringify(anchor.target.selector)
         anchor.highlights[0].classList.add('selected')
 
-  scrollAndHighlightAnnotation: (event) ->
-    incomingSelector = event.detail.selector
-
+  scrollAndHighlightAnnotation: (selector) ->
     for anchor in @anchors when anchor.highlights?
-      if JSON.stringify(incomingSelector) == JSON.stringify(anchor.target.selector)
+      if JSON.stringify(selector) == JSON.stringify(anchor.target.selector)
         @scrollToAnnotation(anchor)
+    @highlightSelected(selector)
 
-    @highlightSelected(incomingSelector)
+  scrollAndHighlightAnnotationHandler: (event) ->
+    incomingSelector = event.detail.selector
+    this.scrollAndHighlightAnnotation(incomingSelector);
 
   init: () ->
     if this.active
@@ -239,7 +240,7 @@ module.exports = class Guest extends Delegator
     window.addEventListener EVENT_HYPOTHESIS_ANNOTATION_REMOVED, this._refreshAnnotations.bind(this)
     window.addEventListener EVENT_HYPOTHESIS_DESTROY, this.destroy.bind(this)
     window.addEventListener EVENT_HYPOTHESIS_INIT, this.init.bind(this)
-    window.addEventListener EVENT_HYPOTHESIS_FOCUS_ANNOTATION, this.scrollAndHighlightAnnotation.bind(this)
+    window.addEventListener EVENT_HYPOTHESIS_FOCUS_ANNOTATION, this.scrollAndHighlightAnnotationHandler.bind(this)
 
   _refreshAnnotations: ->
     this._clearHighlighting()
@@ -439,6 +440,12 @@ module.exports = class Guest extends Delegator
     targets.then(-> 
       if annotation.target[0]
         self.config.onAnnotationAdded(annotation.target[0].selector, !!annotation.$highlight)
+
+      if annotation.target[0] and !annotation.$highlight
+        setTimeout (->
+          self.scrollAndHighlightAnnotation(annotation.target[0].selector)
+          return
+        ), 500
     )
 
     @crossframe?.call('showSidebar') unless annotation.$highlight
