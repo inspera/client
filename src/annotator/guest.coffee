@@ -90,7 +90,7 @@ module.exports = class Guest extends Delegator
       return
 
     for anchor in @anchors when anchor.highlights?
-      if JSON.stringify(selector) == JSON.stringify(anchor.target.selector)
+      if JSON.stringify(selector) == JSON.stringify(anchor.target.selector) and anchor.highlights[0]
         anchor.highlights[0].classList.add('selected')
 
   scrollAndHighlightAnnotation: (event) ->
