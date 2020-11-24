@@ -84,14 +84,9 @@ module.exports = class Guest extends Delegator
       scrollIntoView(anchor.highlights[0])
 
   highlightSelected: (selector) ->
-    annotationNodesList = document.getElementsByClassName('hypothesis-highlight')
-    Object.values(annotationNodesList).forEach.call annotationNodesList, (el) ->
-      el.classList.remove 'selected'
-      return
-
     for anchor in @anchors when anchor.highlights?
-      if JSON.stringify(selector) == JSON.stringify(anchor.target.selector)
-        anchor.highlights[0].classList.add('selected')
+      toggle = JSON.stringify(selector) == JSON.stringify(anchor.target.selector)
+      $(anchor.highlights).toggleClass('selected', toggle)
 
   scrollAndHighlightAnnotation: (event) ->
     incomingSelector = event.detail.selector
