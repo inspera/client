@@ -100,8 +100,7 @@ module.exports = class Guest extends Delegator
     @highlightSelected(selector)
 
   scrollAndHighlightAnnotationHandler: (event) ->
-    incomingSelector = event.detail.selector
-    this.scrollAndHighlightAnnotation(incomingSelector);
+    this.scrollAndHighlightAnnotation(event.detail.selector);
 
   init: () ->
     if this.active
