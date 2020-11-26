@@ -89,8 +89,8 @@ module.exports = class Guest extends Delegator
       el.classList.remove 'selected'
       return
 
-    for anchor in @anchors when anchor.highlights?
-      if JSON.stringify(selector) == JSON.stringify(anchor.target.selector) and anchor.highlights[0]
+    for anchor in @anchors when anchor.highlights and anchor.highlights[0]?
+      if JSON.stringify(selector) == JSON.stringify(anchor.target.selector)
         anchor.highlights[0].classList.add('selected')
 
   scrollAndHighlightAnnotation: (event) ->
