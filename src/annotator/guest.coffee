@@ -39,6 +39,7 @@ module.exports = class Guest extends Delegator
   EVENT_HYPOTHESIS_ANNOTATION_REMOVED = 'Hypothesis:annotationRemoved'
   EVENT_HYPOTHESIS_DESTROY = 'Hypothesis:destroy'
   EVENT_HYPOTHESIS_FOCUS_ANNOTATION = 'Hypothesis:focusAnnotation'
+  EVENT_HYPOTHESIS_SET_VISIBILITY = 'Hypothesis:setVisibility'
 
   # Events to be bound on Delegator#element.
   events:
@@ -96,6 +97,9 @@ module.exports = class Guest extends Delegator
         @scrollToAnnotation(anchor)
 
     @highlightSelected(incomingSelector)
+
+  setAnnotationsVisibility: (event) ->
+    this.toggleHighlightClass(event.detail.visibility)
 
   init: () ->
     if this.active
@@ -235,6 +239,7 @@ module.exports = class Guest extends Delegator
     window.addEventListener EVENT_HYPOTHESIS_DESTROY, this.destroy.bind(this)
     window.addEventListener EVENT_HYPOTHESIS_INIT, this.init.bind(this)
     window.addEventListener EVENT_HYPOTHESIS_FOCUS_ANNOTATION, this.scrollAndHighlightAnnotation.bind(this)
+    window.addEventListener EVENT_HYPOTHESIS_SET_VISIBILITY, this.setAnnotationsVisibility.bind(this)
 
   _refreshAnnotations: ->
     this._clearHighlighting()
