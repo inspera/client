@@ -36,8 +36,9 @@ IGNORE_SELECTOR = '[class^="annotator-"],[class^="hypothesis-"]'
 module.exports = class Guest extends Delegator
   SHOW_HIGHLIGHTS_CLASS = 'hypothesis-highlights-always-on'
   EVENT_HYPOTHESIS_INIT = 'Hypothesis:init'
-  EVENT_HYPOTHESIS_ANNOTATION_REMOVED = 'Hypothesis:annotationRemoved'
+  EVENT_HYPOTHESIS_PATH_CHANGE = 'Hypothesis:pathChange'
   EVENT_HYPOTHESIS_DESTROY = 'Hypothesis:destroy'
+  EVENT_HYPOTHESIS_ANNOTATION_REMOVED = 'Hypothesis:annotationRemoved'
   EVENT_HYPOTHESIS_FOCUS_ANNOTATION = 'Hypothesis:focusAnnotation'
 
   # Events to be bound on Delegator#element.
@@ -100,7 +101,7 @@ module.exports = class Guest extends Delegator
   init: () ->
     if this.active
       # just refresh annotations if the lib is already active
-      this._refreshAnnotations()
+      # this._refreshAnnotations()
       return
 
     super
@@ -232,8 +233,9 @@ module.exports = class Guest extends Delegator
 
   _addPlayerListener: ->
     window.addEventListener EVENT_HYPOTHESIS_ANNOTATION_REMOVED, this._refreshAnnotations.bind(this)
-    window.addEventListener EVENT_HYPOTHESIS_DESTROY, this.destroy.bind(this)
     window.addEventListener EVENT_HYPOTHESIS_INIT, this.init.bind(this)
+    window.addEventListener EVENT_HYPOTHESIS_DESTROY, this.destroy.bind(this)
+    window.addEventListener EVENT_HYPOTHESIS_PATH_CHANGE, this._refreshAnnotations.bind(this)
     window.addEventListener EVENT_HYPOTHESIS_FOCUS_ANNOTATION, this.scrollAndHighlightAnnotation.bind(this)
 
   _refreshAnnotations: ->
