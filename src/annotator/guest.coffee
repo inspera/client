@@ -244,6 +244,8 @@ module.exports = class Guest extends Delegator
     window.addEventListener EVENT_HYPOTHESIS_SET_VISIBILITY, this.setAnnotationsVisibility.bind(this)
 
   _refreshAnnotations: ->
+    return if !this.active
+
     this._clearHighlighting()
 
     initialAnnotations = this.config.refreshAnnotations && this.config.refreshAnnotations() || []
@@ -267,6 +269,7 @@ module.exports = class Guest extends Delegator
     @element.data('annotator', null)
 
   destroy: ->
+    this.active = false
     $('#annotator-dynamic-style').remove()
 
     this.selections.unsubscribe()
@@ -278,7 +281,6 @@ module.exports = class Guest extends Delegator
       @plugins[name].destroy()
 
     super
-    this.active = false
 
   anchor: (annotation) ->
     self = this
