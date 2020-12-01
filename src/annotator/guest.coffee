@@ -103,9 +103,8 @@ module.exports = class Guest extends Delegator
     this.toggleHighlightClass(event.detail.visibility)
 
   init: () ->
+    # prevent reinit if it's not needed
     if this.active
-      # just refresh annotations if the lib is already active
-      # this._refreshAnnotations()
       return
 
     super
@@ -244,6 +243,7 @@ module.exports = class Guest extends Delegator
     window.addEventListener EVENT_HYPOTHESIS_SET_VISIBILITY, this.setAnnotationsVisibility.bind(this)
 
   _refreshAnnotations: ->
+    # do not load annotations if hypothesis is destroyed
     return if !this.active
 
     this._clearHighlighting()
@@ -269,7 +269,6 @@ module.exports = class Guest extends Delegator
     @element.data('annotator', null)
 
   destroy: ->
-    this.active = false
     $('#annotator-dynamic-style').remove()
 
     this.selections.unsubscribe()
@@ -281,6 +280,7 @@ module.exports = class Guest extends Delegator
       @plugins[name].destroy()
 
     super
+    this.active = false
 
   anchor: (annotation) ->
     self = this
