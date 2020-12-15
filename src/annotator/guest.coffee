@@ -409,7 +409,8 @@ module.exports = class Guest extends Delegator
 
   createAnnotation: (annotation = {}) ->
     self = this
-    root = @element[0]
+    rootSelector = this.config.adderRange?.root
+    root = rootSelector && @element[0].querySelector(rootSelector) || @element[0]
 
     ranges = @selectedRanges ? []
     @selectedRanges = null
