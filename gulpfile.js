@@ -2,7 +2,7 @@
 
 'use strict';
 
-const { mkdirSync } = require('fs');
+// const { mkdirSync } = require('fs');
 const path = require('path');
 
 const changed = require('gulp-changed');
@@ -14,14 +14,14 @@ const rename = require('gulp-rename');
 const through = require('through2');
 
 const createBundle = require('./scripts/gulp/create-bundle');
-const createStyleBundle = require('./scripts/gulp/create-style-bundle');
+// const createStyleBundle = require('./scripts/gulp/create-style-bundle');
 const manifest = require('./scripts/gulp/manifest');
 const servePackage = require('./dev-server/serve-package');
 const vendorBundles = require('./scripts/gulp/vendor-bundles');
 
 const IS_PRODUCTION_BUILD = process.env.NODE_ENV === 'production';
 const SCRIPT_DIR = 'build/scripts';
-const STYLE_DIR = 'build/styles';
+// const STYLE_DIR = 'build/styles';
 const FONTS_DIR = 'build/fonts';
 const IMAGES_DIR = 'build/images';
 
@@ -148,37 +148,37 @@ gulp.task(
   })
 );
 
-const cssBundles = [
-  // H
-  './src/styles/annotator/annotator.scss',
-  './src/styles/annotator/pdfjs-overrides.scss',
-  './src/styles/sidebar/sidebar.scss',
-
-  // Vendor
-  './node_modules/katex/dist/katex.min.css',
-];
-
-gulp.task('build-css', function () {
-  mkdirSync(STYLE_DIR, { recursive: true });
-  const bundles = cssBundles.map(entry =>
-    createStyleBundle({
-      input: entry,
-      output: `${STYLE_DIR}/${path.basename(entry, path.extname(entry))}.css`,
-      minify: IS_PRODUCTION_BUILD,
-    })
-  );
-  return Promise.all(bundles);
-});
-
-gulp.task(
-  'watch-css',
-  gulp.series('build-css', function watchCSS() {
-    const vendorCSS = cssBundles.filter(path => path.endsWith('.css'));
-    const styleFileGlobs = vendorCSS.concat('./src/styles/**/*.scss');
-
-    gulp.watch(styleFileGlobs, gulp.task('build-css'));
-  })
-);
+// const cssBundles = [
+//   // H
+//   './src/styles/annotator/annotator.scss',
+//   './src/styles/annotator/pdfjs-overrides.scss',
+//   './src/styles/sidebar/sidebar.scss',
+//
+//   // Vendor
+//   './node_modules/katex/dist/katex.min.css',
+// ];
+// -->
+// gulp.task('build-css', function () {
+//   mkdirSync(STYLE_DIR, { recursive: true });
+//   const bundles = cssBundles.map(entry =>
+//     createStyleBundle({
+//       input: entry,
+//       output: `${STYLE_DIR}/${path.basename(entry, path.extname(entry))}.css`,
+//       minify: IS_PRODUCTION_BUILD,
+//     })
+//   );
+//   return Promise.all(bundles);
+// });
+//
+// gulp.task(
+//   'watch-css',
+//   gulp.series('build-css', function watchCSS() {
+//     const vendorCSS = cssBundles.filter(path => path.endsWith('.css'));
+//     const styleFileGlobs = vendorCSS.concat('./src/styles/**/*.scss');
+//
+//     gulp.watch(styleFileGlobs, gulp.task('build-css'));
+//   })
+// );
 
 const fontFiles = [
   'src/styles/vendor/fonts/*.woff',
@@ -306,7 +306,7 @@ gulp.task('serve-test-pages', function () {
 
 const buildAssets = gulp.parallel(
   'build-js',
-  'build-css',
+  // 'build-css', //
   'build-fonts',
   'build-images'
 );
@@ -318,7 +318,7 @@ gulp.task(
     'serve-package',
     'serve-test-pages',
     'watch-js',
-    'watch-css',
+    // 'watch-css', //
     'watch-fonts',
     'watch-images',
     'watch-manifest'
@@ -341,9 +341,11 @@ function runKarma({ singleRun }, done) {
 // Some (eg. a11y) tests rely on CSS bundles, so build these first.
 gulp.task(
   'test',
-  gulp.series('build-css', done => runKarma({ singleRun: true }, done))
+  // gulp.series('build-css', done => runKarma({ singleRun: true }, done))
+  done => runKarma({ singleRun: true }, done)
 );
 gulp.task(
   'test-watch',
-  gulp.series('build-css', done => runKarma({ singleRun: false }, done))
+  // gulp.series('build-css', done => runKarma({ singleRun: false }, done))
+  done => runKarma({ singleRun: false }, done)
 );
