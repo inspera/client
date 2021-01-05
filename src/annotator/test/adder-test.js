@@ -54,7 +54,7 @@ describe('Adder', () => {
   }
 
   function getContent() {
-    return adderCtrl._shadowRoot;
+    return adderCtrl._container;
   }
 
   function adderSize() {
@@ -85,7 +85,7 @@ describe('Adder', () => {
   // });
 
   describe('button handling', () => {
-    const getButton = id => getContent(adderCtrl).getElementById(id);
+    const getButton = id => getContent(adderCtrl).querySelector(`#${id}`);
 
     const triggerShortcut = key =>
       document.body.dispatchEvent(new KeyboardEvent('keydown', { key }));
