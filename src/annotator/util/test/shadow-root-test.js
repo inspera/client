@@ -19,15 +19,5 @@ describe('annotator/util/shadow-root', () => {
 
       assert.equal(shadowRoot, container);
     });
-
-    // it('injects stylesheets into the shadow root', () => {
-    //   const container = document.createElement('div');
-    //
-    //   createShadowRoot(container);
-    //
-    //   const styleEl = container.shadowRoot.querySelector('style');
-    //   assert.ok(styleEl);
-    //   assert.match(styleEl.textContent, /@import ".*annotator\.css.*"/);
-    // });
   });
 });
