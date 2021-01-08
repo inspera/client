@@ -269,11 +269,7 @@ gulp.task('serve-test-pages', function () {
   });
 });
 
-const buildAssets = gulp.parallel(
-  'build-js',
-  'build-fonts',
-  'build-images'
-);
+const buildAssets = gulp.parallel('build-js', 'build-fonts', 'build-images');
 gulp.task('build', gulp.series(buildAssets, generateManifest));
 
 gulp.task(
@@ -302,11 +298,5 @@ function runKarma({ singleRun }, done) {
 
 // Unit and integration testing tasks.
 // Some (eg. a11y) tests rely on CSS bundles, so build these first.
-gulp.task(
-  'test',
-  done => runKarma({ singleRun: true }, done)
-);
-gulp.task(
-  'test-watch',
-  done => runKarma({ singleRun: false }, done)
-);
+gulp.task('test', done => runKarma({ singleRun: true }, done));
+gulp.task('test-watch', done => runKarma({ singleRun: false }, done));
