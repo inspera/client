@@ -104,7 +104,7 @@ module.exports = class Guest extends Delegator
   setAnnotationsVisibility: (event) ->
     this.toggleHighlightClass(event.detail.visibility)
 
-  init: () ->
+  init: (event) ->
     # prevent reinit if it's not needed
     if this.active
       return
@@ -125,7 +125,7 @@ module.exports = class Guest extends Delegator
       onShowAnnotations: (anns) ->
         self.selectAnnotations(anns)
       disableShowButton: !!this.config.disableShowButton,
-      captions: this.config.captions
+      captions: event?.detail?.captions || this.config.captions
     })
     this.selections = selections(document).subscribe
       next: (range) ->
