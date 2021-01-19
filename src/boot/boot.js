@@ -109,9 +109,6 @@ function bootHypothesisClient(doc, config) {
 
     // Main entry point for the client
     'scripts/annotator.bundle.js',
-
-    'styles/annotator.css',
-    'styles/pdfjs-overrides.css',
   ]);
 }
 
@@ -145,9 +142,6 @@ function bootSidebarApp(doc, config) {
 
     // The sidebar app
     'scripts/sidebar.bundle.js',
-
-    'styles/katex.min.css',
-    'styles/sidebar.css',
   ]);
 }
 
