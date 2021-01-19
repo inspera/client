@@ -86,6 +86,8 @@ module.exports = class Guest extends Delegator
       scrollIntoView(anchor.highlights[0])
 
   highlightSelected: (selector) ->
+    return if !selector
+
     for anchor in @anchors when anchor.highlights?
       toggle = JSON.stringify(selector) == JSON.stringify(anchor.target.selector)
       $(anchor.highlights).toggleClass('selected', toggle)
@@ -102,7 +104,7 @@ module.exports = class Guest extends Delegator
   setAnnotationsVisibility: (event) ->
     this.toggleHighlightClass(event.detail.visibility)
 
-  init: () ->
+  init: (event) ->
     # prevent reinit if it's not needed
     if this.active
       return
@@ -123,7 +125,7 @@ module.exports = class Guest extends Delegator
       onShowAnnotations: (anns) ->
         self.selectAnnotations(anns)
       disableShowButton: !!this.config.disableShowButton,
-      captions: this.config.captions
+      captions: event?.detail?.captions || this.config.captions
     })
     this.selections = selections(document).subscribe
       next: (range) ->
@@ -242,7 +244,7 @@ module.exports = class Guest extends Delegator
     window.addEventListener EVENT_HYPOTHESIS_FOCUS_ANNOTATION, this.scrollAndHighlightAnnotation.bind(this)
     window.addEventListener EVENT_HYPOTHESIS_SET_VISIBILITY, this.setAnnotationsVisibility.bind(this)
 
-  _refreshAnnotations: ->
+  _refreshAnnotations: (event) ->
     # do not load annotations if hypothesis is destroyed
     return if !this.active
 
@@ -250,8 +252,13 @@ module.exports = class Guest extends Delegator
 
     initialAnnotations = this.config.refreshAnnotations && this.config.refreshAnnotations() || []
     self = this
-    initialAnnotations.forEach (item) -> 
-      self.anchor({target: [{selector: item}]})
+    anchorPromises = []
+    initialAnnotations.forEach (item) ->
+      anchorPromises.push(self.anchor({target: [{selector: item}]}))
+      return
+
+    Promise.all(anchorPromises).then (values) ->
+      self.highlightSelected(event?.detail?.focusedAnnotation)
       return
 
   _composeExistingAnnotations: () ->
@@ -409,7 +416,8 @@ module.exports = class Guest extends Delegator
 
   createAnnotation: (annotation = {}) ->
     self = this
-    root = @element[0]
+    rootSelector = this.config.adderRange?.root
+    root = rootSelector && @element[0].querySelector(rootSelector) || @element[0]
 
     ranges = @selectedRanges ? []
     @selectedRanges = null
@@ -593,10 +601,7 @@ module.exports = class Guest extends Delegator
 
     if selector && this.config.onAnnotationClick
       this.config.onAnnotationClick(selector)
-      setTimeout (->
-        self.highlightSelected(selector)
-        return
-      ), 500
+      self.highlightSelected(selector)
 
     return unless @visibleHighlights
     annotation = $(event.currentTarget).data('annotation')
