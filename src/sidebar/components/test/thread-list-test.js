@@ -235,15 +235,6 @@ describe('ThreadList', () => {
       });
     });
 
-    it('only renders visible threads', () => {
-      const wrapper = createComponent();
-      const renderedThreads = wrapper.find('ThreadCard');
-
-      // "5" is the current expected value given the thread heights, scroll
-      // container size and constants in `../util/visible-threads`.
-      assert.equal(renderedThreads.length, 5);
-    });
-
     it('updates thread heights as the list is scrolled', () => {
       const scrollTo = yOffset => {
         act(() => {

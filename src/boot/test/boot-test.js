@@ -35,17 +35,12 @@ describe('bootstrap', function () {
       // Annotation layer
       'scripts/jquery.bundle.js',
       'scripts/annotator.bundle.js',
-      'styles/annotator.css',
-      'styles/pdfjs-overrides.css',
 
       // Sidebar app
       'scripts/sentry.bundle.js',
       'scripts/katex.bundle.js',
       'scripts/showdown.bundle.js',
       'scripts/sidebar.bundle.js',
-
-      'styles/katex.min.css',
-      'styles/sidebar.css',
     ];
 
     const manifest = assetNames.reduce(function (manifest, path) {
@@ -83,8 +78,6 @@ describe('bootstrap', function () {
       const expectedAssets = [
         'scripts/annotator.bundle.1234.js',
         'scripts/jquery.bundle.1234.js',
-        'styles/annotator.1234.css',
-        'styles/pdfjs-overrides.1234.css',
       ].map(assetUrl);
 
       assert.deepEqual(findAssets(iframe.contentDocument), expectedAssets);
@@ -146,8 +139,6 @@ describe('bootstrap', function () {
         'scripts/sentry.bundle.1234.js',
         'scripts/showdown.bundle.1234.js',
         'scripts/sidebar.bundle.1234.js',
-        'styles/katex.min.1234.css',
-        'styles/sidebar.1234.css',
       ].map(assetUrl);
 
       assert.deepEqual(findAssets(iframe.contentDocument), expectedAssets);

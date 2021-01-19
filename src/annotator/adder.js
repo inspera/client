@@ -1,7 +1,6 @@
 import { createElement, render } from 'preact';
 
 import AdderToolbar from './components/adder-toolbar';
-import { createShadowRoot } from './util/shadow-root';
 
 /**
  * @typedef Target
@@ -82,7 +81,6 @@ export class Adder {
    */
   constructor(container, options) {
     this._container = container;
-    this._shadowRoot = createShadowRoot(container);
     this._disableShowButton = options.disableShowButton;
     this._captions = options.captions;
 
@@ -102,12 +100,12 @@ export class Adder {
     this._view = /** @type {Window} */ (container.ownerDocument.defaultView);
 
     this._width = () => {
-      const firstChild = /** @type {Element} */ (this._shadowRoot.firstChild);
+      const firstChild = /** @type {Element} */ (this._container.firstChild);
       return firstChild.getBoundingClientRect().width;
     };
 
     this._height = () => {
-      const firstChild = /** @type {Element} */ (this._shadowRoot.firstChild);
+      const firstChild = /** @type {Element} */ (this._container.firstChild);
       return firstChild.getBoundingClientRect().height;
     };
 
@@ -252,7 +250,7 @@ export class Adder {
         disableShowButton={this._disableShowButton}
         captions={this._captions}
       />,
-      this._shadowRoot
+      this._container
     );
   }
 }

@@ -54,7 +54,7 @@ describe('Adder', () => {
   }
 
   function getContent() {
-    return adderCtrl._shadowRoot;
+    return adderCtrl._container;
   }
 
   function adderSize() {
@@ -62,30 +62,8 @@ describe('Adder', () => {
     return { width: rect.width, height: rect.height };
   }
 
-  it('renders the adder toolbar into a shadow root', () => {
-    const adderEl = document.createElement('div');
-    let shadowEl;
-
-    adderEl.attachShadow = sinon.spy(() => {
-      shadowEl = document.createElement('shadow-root');
-      adderEl.appendChild(shadowEl);
-      return shadowEl;
-    });
-    document.body.appendChild(adderEl);
-
-    new Adder(adderEl, adderCallbacks);
-
-    assert.called(adderEl.attachShadow);
-    assert.equal(
-      shadowEl.childNodes[0].tagName.toLowerCase(),
-      'hypothesis-adder-toolbar'
-    );
-
-    adderEl.remove();
-  });
-
   describe('button handling', () => {
-    const getButton = id => getContent(adderCtrl).getElementById(id);
+    const getButton = id => getContent(adderCtrl).querySelector(`#${id}`);
 
     const triggerShortcut = key =>
       document.body.dispatchEvent(new KeyboardEvent('keydown', { key }));
