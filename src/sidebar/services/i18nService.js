@@ -47,6 +47,7 @@ function i18nService($rootScope, localStorage = window.localStorage) {
       'nn-NO': 'nn-NO-K12',
       'nb-NO': 'nb-NO-K12',
       'sv-SE': 'sv-SE-K12',
+      'pl-PL': 'pl-PL-K12',
     },
   };
 
