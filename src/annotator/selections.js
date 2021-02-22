@@ -25,14 +25,32 @@ export default function selections(document) {
   // Get a stream of selection changes that occur whilst the user is not
   // making a selection with the mouse.
   let isMouseDown;
+  let shiftWasPressed; // caret browsing mode selection check
   const selectionEvents = observable
-    .listen(document, ['mousedown', 'mouseup', 'selectionchange'])
+    .listen(document, ['mousedown', 'mouseup', 'selectionchange', 'keydown', 'keyup'])
     .filter(function (event) {
-      if (event.type === 'mousedown' || event.type === 'mouseup') {
+      const range = selectedRange(document);
+      const isArrowKey
+        = event.keyCode === 37
+        || event.keyCode === 38
+        || event.keyCode === 39
+        || event.keyCode === 40;
+
+      if (event.type === 'keydown' && event.keyCode === 16) {
+        shiftWasPressed = true;
+      }
+      if (event.type === 'keydown' && isArrowKey && !shiftWasPressed) {
+        return !isMouseDown;
+        // return false;
+      } else if (event.type === 'mousedown' || event.type === 'mouseup') {
         isMouseDown = event.type === 'mousedown';
         return false;
-      } else {
+      } else if (range && event.type === 'keyup' && event.keyCode === 16 && range.startOffset !== range.endOffset) {
+        shiftWasPressed = false;
         return !isMouseDown;
+        // return true;
+      } else if (event.type === 'mouseup' && !shiftWasPressed) {
+        return true;
       }
     });
 

@@ -1,5 +1,6 @@
 import classnames from 'classnames';
 import { createElement } from 'preact';
+import { useEffect, useRef } from 'preact/hooks';
 import propTypes from 'prop-types';
 
 import { useShortcut } from '../../shared/shortcut';
@@ -26,6 +27,7 @@ function ToolbarButton({ id, badgeCount, icon, label, onClick, shortcut }) {
       onClick={onClick}
       aria-label={title}
       title={title}
+      tabIndex={0}
     >
       {icon && (
         <SvgIcon name={icon} className="annotator-adder-actions__icon" />
@@ -83,6 +85,11 @@ export default function AdderToolbar({
   disableShowButton = false,
   captions = {},
 }) {
+  const adderActionsRef = useRef(/** @type {HTMLDivElement|null} */ (null));
+  useEffect(() => {
+    adderActionsRef.current.base.focus();
+  }, [isVisible]);
+
   const handleCommand = (event, command) => {
     event.preventDefault();
     event.stopPropagation();
@@ -117,6 +124,7 @@ export default function AdderToolbar({
           onClick={e => handleCommand(e, 'annotate')}
           label={captions.annotate || 'annotate'}
           shortcut={annotateShortcut}
+          ref={adderActionsRef}
         />
         <ToolbarButton
           id="highlight-adder-button"
