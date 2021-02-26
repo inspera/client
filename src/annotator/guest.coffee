@@ -165,7 +165,7 @@ module.exports = class Guest extends Delegator
         this.addPlugin(name, opts)
 
     this.active = true
-    this._refreshAnnotations()
+    this._refreshAnnotations(event)
 
   addPlugin: (name, options) ->
     if @plugins[name]
