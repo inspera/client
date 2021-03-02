@@ -27,13 +27,20 @@ export default function selections(document) {
   let isMouseDown;
   let shiftWasPressed; // caret browsing mode selection check
   const selectionEvents = observable
-    .listen(document, ['mousedown', 'mouseup', 'selectionchange', 'keydown', 'keyup'])
+    .listen(document, [
+      'mousedown',
+      'mouseup',
+      'selectionchange',
+      'keydown',
+      'keyup',
+    ])
     .filter(function (event) {
       const range = selectedRange(document);
-      const isArrowKey = event.keyCode === 37
-        || event.keyCode === 38
-        || event.keyCode === 39
-        || event.keyCode === 40;
+      const isArrowKey =
+        event.keyCode === 37 ||
+        event.keyCode === 38 ||
+        event.keyCode === 39 ||
+        event.keyCode === 40;
 
       if (event.type === 'keydown' && event.keyCode === 16) {
         shiftWasPressed = true;
@@ -43,7 +50,12 @@ export default function selections(document) {
       } else if (event.type === 'mousedown' || event.type === 'mouseup') {
         isMouseDown = event.type === 'mousedown';
         return false;
-      } else if (range && event.type === 'keyup' && event.keyCode === 16 && range.startOffset !== range.endOffset) {
+      } else if (
+        range &&
+        event.type === 'keyup' &&
+        event.keyCode === 16 &&
+        range.startOffset !== range.endOffset
+      ) {
         shiftWasPressed = false;
         return !isMouseDown;
       }
