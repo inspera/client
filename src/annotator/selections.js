@@ -30,8 +30,7 @@ export default function selections(document) {
     .listen(document, ['mousedown', 'mouseup', 'selectionchange', 'keydown', 'keyup'])
     .filter(function (event) {
       const range = selectedRange(document);
-      const isArrowKey
-        = event.keyCode === 37
+      const isArrowKey = event.keyCode === 37
         || event.keyCode === 38
         || event.keyCode === 39
         || event.keyCode === 40;
@@ -41,15 +40,14 @@ export default function selections(document) {
       }
       if (event.type === 'keydown' && isArrowKey && !shiftWasPressed) {
         return !isMouseDown;
-        // return false;
       } else if (event.type === 'mousedown' || event.type === 'mouseup') {
         isMouseDown = event.type === 'mousedown';
         return false;
       } else if (range && event.type === 'keyup' && event.keyCode === 16 && range.startOffset !== range.endOffset) {
         shiftWasPressed = false;
         return !isMouseDown;
-        // return true;
-      } else if (event.type === 'mouseup' && !shiftWasPressed) {
+      }
+      if (event.type === 'mouseup' && !shiftWasPressed) {
         return true;
       }
     });
