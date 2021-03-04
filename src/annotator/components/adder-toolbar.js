@@ -47,6 +47,10 @@ ToolbarButton.propTypes = {
   label: propTypes.string.isRequired,
   onClick: propTypes.func.isRequired,
   shortcut: propTypes.string,
+  ref: propTypes.oneOfType([
+    propTypes.func,
+    propTypes.shape({ current: propTypes.any })
+  ])
 };
 
 /**
@@ -85,7 +89,7 @@ export default function AdderToolbar({
   disableShowButton = false,
   captions = {},
 }) {
-  const adderActionsRef = useRef(/** @type {HTMLDivElement|null} */ (null));
+  const adderActionsRef = useRef(/** @type {PreactElement|null} */ (null));
   useEffect(() => {
     adderActionsRef.current.base.focus();
   }, [isVisible]);
