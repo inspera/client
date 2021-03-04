@@ -49,8 +49,8 @@ ToolbarButton.propTypes = {
   shortcut: propTypes.string,
   ref: propTypes.oneOfType([
     propTypes.func,
-    propTypes.shape({ current: propTypes.any })
-  ])
+    propTypes.shape({ current: propTypes.any }),
+  ]),
 };
 
 /**
