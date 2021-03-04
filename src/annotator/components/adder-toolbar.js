@@ -89,7 +89,7 @@ export default function AdderToolbar({
   disableShowButton = false,
   captions = {},
 }) {
-  const adderActionsRef = useRef(/** @type {PreactElement|null} */ (null));
+  const adderActionsRef = useRef(/** @type {any} */ (null));
   useEffect(() => {
     adderActionsRef.current.base.focus();
   }, [isVisible]);
