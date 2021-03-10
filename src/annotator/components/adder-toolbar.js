@@ -25,7 +25,7 @@ function ToolbarButton({
   shortcut,
   isFocused,
 }) {
-  const adderButtonRef = useRef(/** @type {HTMLDivElement|null} */ (null));
+  const adderButtonRef = useRef(/** @type {HTMLButtonElement|null} */ (null));
   const title = shortcut ? `${label} (${shortcut})` : label;
 
   useShortcut(shortcut, onClick);
