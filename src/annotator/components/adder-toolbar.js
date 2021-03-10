@@ -14,7 +14,6 @@ import SvgIcon from '../../shared/components/svg-icon';
  *  @param {string} props.label
  *  @param {() => any} props.onClick
  *  @param {string|null} props.shortcut
- *  @param {boolean} props.isFocused
  */
 function ToolbarButton({
   id,
