@@ -16,7 +16,15 @@ import SvgIcon from '../../shared/components/svg-icon';
  *  @param {string|null} props.shortcut
  *  @param {boolean} props.isFocused
  */
-function ToolbarButton({ id, badgeCount, icon, label, onClick, shortcut, isFocused }) {
+function ToolbarButton({
+  id,
+  badgeCount,
+  icon,
+  label,
+  onClick,
+  shortcut,
+  isFocused,
+}) {
   const adderButtonRef = useRef(/** @type {HTMLDivElement|null} */ (null));
   const title = shortcut ? `${label} (${shortcut})` : label;
 
