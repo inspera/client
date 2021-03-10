@@ -14,11 +14,19 @@ import SvgIcon from '../../shared/components/svg-icon';
  *  @param {string} props.label
  *  @param {() => any} props.onClick
  *  @param {string|null} props.shortcut
+ *  @param {boolean} props.isFocused
  */
-function ToolbarButton({ id, badgeCount, icon, label, onClick, shortcut }) {
+function ToolbarButton({ id, badgeCount, icon, label, onClick, shortcut, isFocused }) {
+  const adderButtonRef = useRef(/** @type {HTMLDivElement|null} */ (null));
+  const title = shortcut ? `${label} (${shortcut})` : label;
+
   useShortcut(shortcut, onClick);
 
-  const title = shortcut ? `${label} (${shortcut})` : label;
+  useEffect(() => {
+    if (isFocused) {
+      adderButtonRef.current.focus();
+    }
+  }, [isFocused]);
 
   return (
     <button
@@ -28,6 +36,7 @@ function ToolbarButton({ id, badgeCount, icon, label, onClick, shortcut }) {
       aria-label={title}
       title={title}
       tabIndex={0}
+      ref={adderButtonRef}
     >
       {icon && (
         <SvgIcon name={icon} className="annotator-adder-actions__icon" />
@@ -47,10 +56,7 @@ ToolbarButton.propTypes = {
   label: propTypes.string.isRequired,
   onClick: propTypes.func.isRequired,
   shortcut: propTypes.string,
-  ref: propTypes.oneOfType([
-    propTypes.func,
-    propTypes.shape({ current: propTypes.any }),
-  ]),
+  isFocused: propTypes.boolean,
 };
 
 /**
@@ -89,11 +95,6 @@ export default function AdderToolbar({
   disableShowButton = false,
   captions = {},
 }) {
-  const adderActionsRef = useRef(/** @type {any} */ (null));
-  useEffect(() => {
-    adderActionsRef.current.base.focus();
-  }, [isVisible]);
-
   const handleCommand = (event, command) => {
     event.preventDefault();
     event.stopPropagation();
@@ -128,7 +129,7 @@ export default function AdderToolbar({
           onClick={e => handleCommand(e, 'annotate')}
           label={captions.annotate || 'annotate'}
           shortcut={annotateShortcut}
-          ref={adderActionsRef}
+          isFocused={isVisible}
         />
         <ToolbarButton
           id="highlight-adder-button"
