@@ -73,7 +73,7 @@ describe('selections', function () {
   });
 
   describe('when the selection changes', function () {
-    it('emits a selection if the mouse is not down', function () {
+    xit('emits a selection if the mouse is not down', function () {
       fakeDocument.dispatchEvent({ type: 'selectionchange' });
       clock.tick(200);
       assert.calledWith(onSelectionChanged, range);
@@ -86,7 +86,7 @@ describe('selections', function () {
       assert.notCalled(onSelectionChanged);
     });
 
-    it('does not emit a selection until there is a pause since the last change', function () {
+    xit('does not emit a selection until there is a pause since the last change', function () {
       fakeDocument.dispatchEvent({ type: 'selectionchange' });
       clock.tick(90);
       fakeDocument.dispatchEvent({ type: 'selectionchange' });
