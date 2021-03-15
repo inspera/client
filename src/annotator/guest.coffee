@@ -95,11 +95,19 @@ module.exports = class Guest extends Delegator
   scrollAndHighlightAnnotation: (event) ->
     incomingSelector = event.detail.selector
 
+    if incomingSelector == null
+      @removeFocusFromAllAnnotations()
+      return
+
     for anchor in @anchors when anchor.highlights?
       if JSON.stringify(incomingSelector) == JSON.stringify(anchor.target.selector)
         @scrollToAnnotation(anchor)
 
     @highlightSelected(incomingSelector)
+
+  removeFocusFromAllAnnotations: () ->
+    for anchor in @anchors
+      $(anchor.highlights).toggleClass('selected', false)
 
   setAnnotationsVisibility: (event) ->
     this.toggleHighlightClass(event.detail.visibility)
