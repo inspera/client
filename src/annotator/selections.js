@@ -33,6 +33,7 @@ export default function selections(document) {
       'keydown',
       'keyup',
     ])
+    // eslint-disable-next-line array-callback-return, consistent-return
     .filter(function (event) {
       const range = selectedRange(document);
       const isArrowKey =
