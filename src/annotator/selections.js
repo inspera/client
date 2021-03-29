@@ -43,8 +43,7 @@ export default function selections(document) {
 
       if (event.type === 'keydown' && isArrowKey && !event.shiftKey) {
         return true;
-      } else
-      if (event.type === 'mousedown' || event.type === 'mouseup') {
+      } else if (event.type === 'mousedown' || event.type === 'mouseup') {
         isMouseDown = event.type === 'mousedown';
         return false;
       } else if (
