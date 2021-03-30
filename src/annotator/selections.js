@@ -25,6 +25,7 @@ export default function selections(document) {
   // Get a stream of selection changes that occur whilst the user is not
   // making a selection with the mouse.
   let isMouseDown;
+  let isShiftDown;
   const selectionEvents = observable
     .listen(document, [
       'mousedown',
@@ -33,31 +34,20 @@ export default function selections(document) {
       'keydown',
       'keyup',
     ])
-    // eslint-disable-next-line array-callback-return, consistent-return
     .filter(function (event) {
-      const range = selectedRange(document);
-      const isArrowKey =
-        event.keyCode === 37 ||
-        event.keyCode === 38 ||
-        event.keyCode === 39 ||
-        event.keyCode === 40;
-
-      if (event.type === 'keydown' && isArrowKey && !event.shiftKey) {
-        return true;
-      } else if (event.type === 'mousedown' || event.type === 'mouseup') {
+      if (event.type === 'mousedown' || event.type === 'mouseup') {
         isMouseDown = event.type === 'mousedown';
         return false;
-      } else if (
-        range &&
-        event.type === 'keyup' &&
-        event.keyCode === 16 &&
-        range.startOffset !== range.endOffset
-      ) {
-        return !isMouseDown;
       }
-      if (event.type === 'mouseup' && !event.shiftKey) {
-        return true;
+
+      if (event.type === 'keydown' || event.type === 'keyup') {
+        if (event.keyCode === 16) {
+          isShiftDown = event.type === 'keydown';
+        }
+        return event.type === 'keyup' && !event.shiftKey;
       }
+
+      return !isMouseDown && !isShiftDown;
     });
 
   const events = observable.merge([
