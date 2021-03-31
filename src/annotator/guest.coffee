@@ -262,7 +262,10 @@ module.exports = class Guest extends Delegator
     self = this
     anchorPromises = []
     initialAnnotations.forEach (item) ->
-      anchorPromises.push(self.anchor({target: [{selector: item}]}))
+      anchorPromises.push(self.anchor({
+        target: [{selector: item.selector}],
+        $highlight: item.isHightlight
+      }))
       return
 
     Promise.all(anchorPromises).then (values) ->
@@ -346,7 +349,9 @@ module.exports = class Guest extends Delegator
       return animationPromise ->
         range = xpathRange.sniff(anchor.range)
         normedRange = range.normalize(root)
-        highlights = highlighter.highlightRange(normedRange, self.config.adderRange?.exclude)
+        className = 'hypothesis-highlight'
+        className += ' hypothesis-highlight-note ' if !anchor.annotation.$highlight
+        highlights = highlighter.highlightRange(normedRange, self.config.adderRange?.exclude, className)
 
         $(highlights).data('annotation', anchor.annotation)
         anchor.highlights = highlights
@@ -604,15 +609,14 @@ module.exports = class Guest extends Delegator
   onHighlightClick: (event) ->
     self = this
 
-    if $(event.currentTarget).data('annotation')
-      selector = $(event.currentTarget).data('annotation').target[0].selector
+    annotation = $(event.currentTarget).data('annotation')
+    selector = annotation?.target[0].selector
 
     if selector && this.config.onAnnotationClick
-      this.config.onAnnotationClick(selector)
+      this.config.onAnnotationClick(selector, !!annotation.$highlight)
       self.highlightSelected(selector)
 
     return unless @visibleHighlights
-    annotation = $(event.currentTarget).data('annotation')
     annotations = event.annotations ?= []
     annotations.push(annotation)
 
