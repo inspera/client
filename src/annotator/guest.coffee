@@ -264,7 +264,7 @@ module.exports = class Guest extends Delegator
     initialAnnotations.forEach (item) ->
       anchorPromises.push(self.anchor({
         target: [{selector: item.selector}],
-        $highlight: item.isHightlight
+        $highlight: item.isHighlight
       }))
       return
 
