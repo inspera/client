@@ -25,15 +25,29 @@ export default function selections(document) {
   // Get a stream of selection changes that occur whilst the user is not
   // making a selection with the mouse.
   let isMouseDown;
+  let isShiftDown;
   const selectionEvents = observable
-    .listen(document, ['mousedown', 'mouseup', 'selectionchange'])
+    .listen(document, [
+      'mousedown',
+      'mouseup',
+      'selectionchange',
+      'keydown',
+      'keyup',
+    ])
     .filter(function (event) {
       if (event.type === 'mousedown' || event.type === 'mouseup') {
         isMouseDown = event.type === 'mousedown';
         return false;
-      } else {
-        return !isMouseDown;
       }
+
+      if (event.type === 'keydown' || event.type === 'keyup') {
+        if (event.keyCode === 16) {
+          isShiftDown = event.type === 'keydown';
+        }
+        return event.type === 'keyup' && !event.shiftKey;
+      }
+
+      return !isMouseDown && !isShiftDown;
     });
 
   const events = observable.merge([

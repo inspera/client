@@ -128,6 +128,7 @@
     "build:dev": "cross-env gulp build",
     "start": "cross-env gulp watch",
     "serve": "cross-env gulp serve-package",
+    "watch": "cross-env gulp watch",
     "lint": "eslint .",
     "checkformatting": "prettier --check **/*.{js,scss}",
     "format": "prettier --list-different --write **/*.{js,scss}",
