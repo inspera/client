@@ -1,5 +1,6 @@
 import classnames from 'classnames';
 import { createElement } from 'preact';
+import { useEffect, useRef } from 'preact/hooks';
 import propTypes from 'prop-types';
 
 import { useShortcut } from '../../shared/shortcut';
@@ -13,11 +14,27 @@ import SvgIcon from '../../shared/components/svg-icon';
  *  @param {string} props.label
  *  @param {() => any} props.onClick
  *  @param {string|null} props.shortcut
+ *  @param {boolean} [props.isFocused]
  */
-function ToolbarButton({ id, badgeCount, icon, label, onClick, shortcut }) {
+function ToolbarButton({
+  id,
+  badgeCount,
+  icon,
+  label,
+  onClick,
+  shortcut,
+  isFocused,
+}) {
+  const adderButtonRef = useRef(/** @type {HTMLButtonElement|null} */ (null));
+  const title = shortcut ? `${label} (${shortcut})` : label;
+
   useShortcut(shortcut, onClick);
 
-  const title = shortcut ? `${label} (${shortcut})` : label;
+  useEffect(() => {
+    if (isFocused) {
+      adderButtonRef.current.focus();
+    }
+  }, [isFocused]);
 
   return (
     <button
@@ -26,6 +43,8 @@ function ToolbarButton({ id, badgeCount, icon, label, onClick, shortcut }) {
       onClick={onClick}
       aria-label={title}
       title={title}
+      tabIndex={0}
+      ref={adderButtonRef}
     >
       {icon && (
         <SvgIcon name={icon} className="annotator-adder-actions__icon" />
@@ -45,6 +64,7 @@ ToolbarButton.propTypes = {
   label: propTypes.string.isRequired,
   onClick: propTypes.func.isRequired,
   shortcut: propTypes.string,
+  isFocused: propTypes.boolean,
 };
 
 /**
@@ -117,6 +137,7 @@ export default function AdderToolbar({
           onClick={e => handleCommand(e, 'annotate')}
           label={captions.annotate || 'annotate'}
           shortcut={annotateShortcut}
+          isFocused={isVisible}
         />
         <ToolbarButton
           id="highlight-adder-button"
