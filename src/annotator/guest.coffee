@@ -12,6 +12,7 @@ rangeUtil = require('./range-util')
 xpathRange = require('./anchoring/range')
 { closest } = require('../shared/dom-element')
 { normalizeURI } = require('./util/url')
+{ default: { ANNOTATE, HIGHLIGHT, DELETE } } = require('./actions')
 
 animationPromise = (fn) ->
   return new Promise (resolve, reject) ->
@@ -132,15 +133,16 @@ module.exports = class Guest extends Delegator
         document.getSelection().removeAllRanges()
       onShowAnnotations: (anns) ->
         self.selectAnnotations(anns)
-      disableShowButton: !!this.config.disableShowButton,
+      onRemoveHighlight: ->
+        if self.focusedHighlight
+          self.config.onHighlightRemove(self.focusedHighlight.target[0].selector)
+
       captions: event?.detail?.captions || this.config.captions
     })
     this.selections = selections(document).subscribe
       next: (range) ->
         if range
           self._onSelection(range)
-        else
-          self._onClearSelection()
 
     this.plugins = {}
     this.anchors = []
@@ -350,7 +352,7 @@ module.exports = class Guest extends Delegator
         range = xpathRange.sniff(anchor.range)
         normedRange = range.normalize(root)
         className = 'hypothesis-highlight'
-        className += ' hypothesis-highlight-note ' if !anchor.annotation.$highlight
+        className = "#{className} hypothesis-simple-highlight" if anchor.annotation.$highlight
         highlights = highlighter.highlightRange(normedRange, self.config.adderRange?.exclude, className)
 
         $(highlights).data('annotation', anchor.annotation)
@@ -540,6 +542,7 @@ module.exports = class Guest extends Delegator
     @selectedRanges = [range]
     @toolbar?.newAnnotationType = 'annotation'
 
+    this.adderCtrl.setButtons([ANNOTATE, HIGHLIGHT])
     {left, top, arrowDirection} = this.adderCtrl.target(focusRect, isBackwards)
     this.adderCtrl.annotationsForSelection = annotationsForSelection()
     this.adderCtrl.showAt(left, top, arrowDirection)
@@ -580,6 +583,11 @@ module.exports = class Guest extends Delegator
     if !this._isEventInAnnotator(event) and !@selectedTargets?.length
       @crossframe?.call('hideSidebar')
 
+    annotation = $(event.target).data('annotation')
+    if !annotation || !annotation.$highlight
+      self.focusedHighlight = null
+      this._onClearSelection() 
+
   onElementTouchStart: (event) ->
     # Mobile browsers do not register click events on
     # elements without cursor: pointer. So instead of
@@ -615,6 +623,12 @@ module.exports = class Guest extends Delegator
     if selector && this.config.onAnnotationClick
       this.config.onAnnotationClick(selector, !!annotation.$highlight)
       self.highlightSelected(selector)
+
+    if self.config.onHighlightRemove && annotation.$highlight
+      self.focusedHighlight = annotation
+      this.adderCtrl.setButtons([DELETE])
+      { left, top, arrowDirection } = this.adderCtrl.focusedTarget(event)
+      this.adderCtrl.showAt(left, top, arrowDirection)
 
     return unless @visibleHighlights
     annotations = event.annotations ?= []

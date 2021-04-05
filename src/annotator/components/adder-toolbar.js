@@ -60,13 +60,7 @@ ToolbarButton.propTypes = {
  *   should appear above the toolbar pointing Up or below the toolbar pointing
  *   Down.
  * @prop {boolean} isVisible - Whether to show the toolbar or not.
- * @prop {(c: Command) => any} onCommand - Called when a toolbar button is clicked.
- * @prop {number} [annotationCount] -
- *   Number of annotations associated with the selected text.
- *   If non-zero, a "Show" button is displayed to allow the user to see the
- *   annotations that correspond to the selection.
- * @prop {boolean} disableShowButton - whether to hide the show button
- * @prop {object} captions - translated captions
+ * @prop {array} tools - List of buttons
  */
 
 /**
@@ -75,27 +69,12 @@ ToolbarButton.propTypes = {
  *
  * @param {AdderToolbarProps} props
  */
-export default function AdderToolbar({
-  arrowDirection,
-  isVisible,
-  onCommand,
-  annotationCount = 0,
-  disableShowButton = false,
-  captions = {},
-}) {
+export default function AdderToolbar({ arrowDirection, isVisible, tools }) {
   const handleCommand = (event, command) => {
     event.preventDefault();
     event.stopPropagation();
-
-    onCommand(command);
+    command();
   };
-
-  // Since the selection toolbar is only shown when there is a selection
-  // of static text, we can use a plain key without any modifier as
-  // the shortcut. This avoids conflicts with browser/OS shortcuts.
-  const annotateShortcut = isVisible ? 'a' : null;
-  const highlightShortcut = isVisible ? 'h' : null;
-  const showShortcut = isVisible ? 's' : null;
 
   // nb. The adder is hidden using the `visibility` property rather than `display`
   // so that we can compute its size in order to position it before display.
@@ -111,32 +90,16 @@ export default function AdderToolbar({
     >
       {/* @ts-ignore */}
       <hypothesis-adder-actions className="annotator-adder-actions">
-        <ToolbarButton
-          id="annotate-adder-button"
-          icon="annotate"
-          onClick={e => handleCommand(e, 'annotate')}
-          label={captions.annotate || 'annotate'}
-          shortcut={annotateShortcut}
-        />
-        <ToolbarButton
-          id="highlight-adder-button"
-          icon="highlight"
-          onClick={e => handleCommand(e, 'highlight')}
-          label={captions.highlight || 'highlight'}
-          shortcut={highlightShortcut}
-        />
-        {annotationCount > 0 && !disableShowButton && (
-          <div className="annotator-adder-actions__separator" />
-        )}
-        {annotationCount > 0 && !disableShowButton && (
+        {tools.map(tool => (
           <ToolbarButton
-            id="show-adder-button"
-            badgeCount={annotationCount}
-            onClick={e => handleCommand(e, 'show')}
-            label={captions.show || 'show'}
-            shortcut={showShortcut}
+            key={tool.name}
+            id={`${tool.name}-adder-button`}
+            icon={tool.icon || tool.name}
+            onClick={e => handleCommand(e, tool.command)}
+            label={tool.caption}
+            shortcut={tool.shortcut}
           />
-        )}
+        ))}
         {/* @ts-ignore */}
       </hypothesis-adder-actions>
       {/* @ts-ignore */}
@@ -147,8 +110,5 @@ export default function AdderToolbar({
 AdderToolbar.propTypes = {
   arrowDirection: propTypes.oneOf(['up', 'down']).isRequired,
   isVisible: propTypes.bool.isRequired,
-  onCommand: propTypes.func.isRequired,
-  annotationCount: propTypes.number,
-  disableShowButton: propTypes.boolean,
-  captions: propTypes.object,
+  tools: propTypes.array.isRequired,
 };

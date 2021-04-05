@@ -1,6 +1,7 @@
 import { createElement, render } from 'preact';
 
 import AdderToolbar from './components/adder-toolbar';
+import Actions from './actions';
 
 /**
  * @typedef Target
@@ -31,6 +32,8 @@ const ARROW_HEIGHT = 10;
 // arrow position.
 const ARROW_H_MARGIN = 20;
 
+const { ANNOTATE, HIGHLIGHT } = Actions;
+
 /**
  * Return the closest ancestor of `el` which has been positioned.
  *
@@ -56,6 +59,7 @@ function nearestPositionedAncestor(el) {
  * @prop {() => any} onHighlight - Callback invoked when "Highlight" button is clicked
  * @prop {(annotations: Object[]) => any} onShowAnnotations -
  *   Callback invoked when  "Show" button is clicked
+ * @prop {() => any} onRemoveHighlight - Callback invoked when "Delete Highlight" button is clicked
  * @prop {boolean} disableShowButton - whether to hide the show button
  * @prop {Object} captions - translated captions
  */
@@ -81,8 +85,7 @@ export class Adder {
    */
   constructor(container, options) {
     this._container = container;
-    this._disableShowButton = options.disableShowButton;
-    this._captions = options.captions;
+    this._captions = options.captions || {};
 
     // Set initial style
     Object.assign(container.style, {
@@ -117,6 +120,7 @@ export class Adder {
     this._onAnnotate = options.onAnnotate;
     this._onHighlight = options.onHighlight;
     this._onShowAnnotations = options.onShowAnnotations;
+    this._onRemoveHighlight = options.onRemoveHighlight;
 
     /**
      * Annotation objects associated with the current selection. If non-empty,
@@ -137,6 +141,15 @@ export class Adder {
   }
 
   /**
+   *
+   * @param {array} tools - List of buttons to show
+   */
+  setButtons(tools) {
+    this._tools = tools;
+    this._render();
+  }
+
+  /**
    * Return the best position to show the adder in order to target the
    * selected text in `targetRect`.
    *
@@ -150,6 +163,7 @@ export class Adder {
   target(targetRect, isSelectionBackwards) {
     // Set the initial arrow direction based on whether the selection was made
     // forwards/upwards or downwards/backwards.
+
     let arrowDirection;
     if (isSelectionBackwards) {
       arrowDirection = ARROW_POINTING_DOWN;
@@ -195,12 +209,46 @@ export class Adder {
     return { top, left, arrowDirection };
   }
 
+  focusedTarget(event) {
+    const shift = Math.floor(this._width() / 2);
+    const gap = 5;
+    const rect = event.currentTarget.getBoundingClientRect();
+    const maxX = rect.left + rect.width - gap - shift;
+    let left = event.clientX - shift;
+    let top;
+
+    const maxY = this._view.innerHeight - this._height() - ARROW_HEIGHT - gap;
+    const arrowDirection =
+      event.clientY < maxY ? ARROW_POINTING_UP : ARROW_POINTING_DOWN;
+
+    if (left < gap) {
+      left = gap + ARROW_H_MARGIN;
+    } else if (left + ARROW_H_MARGIN > maxX) {
+      left = maxX - ARROW_H_MARGIN;
+    } else {
+      left += ARROW_H_MARGIN;
+    }
+
+    if (arrowDirection === ARROW_POINTING_UP) {
+      top = event.clientY + ARROW_H_MARGIN;
+    } else {
+      top = event.clientY - this._height() - ARROW_HEIGHT;
+    }
+
+    return {
+      left,
+      top,
+      arrowDirection,
+    };
+  }
+
   /**
    * Show the adder at the given position and with the arrow pointing in
    * `arrowDirection`.
    *
    * @param {number} left - Horizontal offset from left edge of viewport.
    * @param {number} top - Vertical offset from top edge of viewport.
+   * @param {number} arrowDirection - Arrow direction
    */
   showAt(left, top, arrowDirection) {
     // Translate the (left, top) viewport coordinates into positions relative to
@@ -222,33 +270,60 @@ export class Adder {
     this._render();
   }
 
-  _render() {
-    const handleCommand = command => {
-      switch (command) {
-        case 'annotate':
+  _prepareTools() {
+    const toolsToShow = this._tools || [ANNOTATE, HIGHLIGHT];
+
+    const existingTools = [
+      {
+        name: 'annotate',
+        caption: this._captions.annotate || 'annotate',
+        command: () => {
           this._onAnnotate();
           this.hide();
-          break;
-        case 'highlight':
+        },
+        shortcut: this._isVisible ? 'a' : null,
+      },
+      {
+        name: 'highlight',
+        caption: this._captions.highlight || 'highlight',
+        command: () => {
           this._onHighlight();
           this.hide();
-          break;
-        case 'show':
+        },
+        shortcut: this._isVisible ? 'h' : null,
+      },
+      {
+        name: 'show',
+        caption: this._captions.show || 'show',
+        command: () => {
           this._onShowAnnotations(this.annotationsForSelection);
-          break;
-        default:
-          break;
-      }
-    };
+        },
+        shortcut: this._isVisible ? 's' : null,
+      },
+      {
+        name: 'delete',
+        caption: this._captions.delete || 'delete',
+        icon: 'trash',
+        command: () => {
+          this._onRemoveHighlight();
+          this.hide();
+        },
+        shortcut: this._isVisible ? 'd' : null,
+      },
+    ];
 
+    return existingTools.filter(tool => toolsToShow.includes(tool.name));
+  }
+
+  /**
+   * @param {string[]=} tools
+   */
+  _render() {
     render(
       <AdderToolbar
         isVisible={this._isVisible}
         arrowDirection={this._arrowDirection}
-        onCommand={handleCommand}
-        annotationCount={this.annotationsForSelection.length}
-        disableShowButton={this._disableShowButton}
-        captions={this._captions}
+        tools={this._prepareTools()}
       />,
       this._container
     );
