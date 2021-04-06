@@ -126,6 +126,7 @@
   "scripts": {
     "build": "cross-env NODE_ENV=production gulp build",
     "build:dev": "cross-env gulp build",
+    "start": "cross-env gulp watch",
     "serve": "cross-env gulp serve-package",
     "watch": "cross-env gulp watch",
     "lint": "eslint .",
