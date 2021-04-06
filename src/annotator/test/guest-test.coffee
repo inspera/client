@@ -19,8 +19,10 @@ class FakeAdder
     FakeAdder::instance = this
 
     this.hide = sinon.stub()
+    this.setButtons = sinon.stub()
     this.showAt = sinon.stub()
     this.target = sinon.stub()
+    this.focusedTarget = sinon.stub()
     this.options = options
 
 class FakePlugin extends Plugin
@@ -407,8 +409,9 @@ describe 'Guest', ->
       assert.called FakeAdder::instance.hide
       assert.notCalled FakeAdder::instance.showAt
 
-    it 'hides the adder if the selection is empty', ->
+    it 'hides the adder if clicked outside toolbar', ->
       guest = createGuest()
+
       selections.next(null)
       assert.called FakeAdder::instance.hide
 

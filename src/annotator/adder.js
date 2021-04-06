@@ -130,8 +130,6 @@ export class Adder {
      * @type {Object[]}
      */
     this.annotationsForSelection = [];
-
-    this._render();
   }
 
   /** Hide the adder */
@@ -315,9 +313,6 @@ export class Adder {
     return existingTools.filter(tool => toolsToShow.includes(tool.name));
   }
 
-  /**
-   * @param {string[]=} tools
-   */
   _render() {
     render(
       <AdderToolbar
