@@ -130,6 +130,8 @@ export class Adder {
      * @type {Object[]}
      */
     this.annotationsForSelection = [];
+
+    this._render();
   }
 
   /** Hide the adder */

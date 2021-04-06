@@ -411,8 +411,9 @@ describe 'Guest', ->
 
     it 'hides the adder if clicked outside toolbar', ->
       guest = createGuest()
+      rootElement = guest.element[0]
 
-      selections.next(null)
+      rootElement.dispatchEvent(new Event('click'))
       assert.called FakeAdder::instance.hide
 
     it "sets the toolbar's `newAnnotationType` to 'annotation' if there is a selection", ->

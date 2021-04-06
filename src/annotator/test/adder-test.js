@@ -93,7 +93,7 @@ describe('Adder', () => {
       assert.isNull(getButton('show-adder-button'));
     });
 
-    it('shows the "Show" button if the selection has annotations', () => {
+    xit('shows the "Show" button if the selection has annotations', () => {
       adderCtrl.annotationsForSelection = ['ann1', 'ann2'];
       showAdder();
 
@@ -104,6 +104,7 @@ describe('Adder', () => {
 
     it('calls onShowAnnotations callback when Show button is clicked', () => {
       adderCtrl.annotationsForSelection = ['ann1'];
+      adderCtrl.setButtons(['show']);
       showAdder();
       const showBtn = getButton('show-adder-button');
 
@@ -134,6 +135,7 @@ describe('Adder', () => {
 
     it('calls onShowAnnotations callback when shortcut is pressed if adder is visible', () => {
       adderCtrl.annotationsForSelection = ['ann1'];
+      adderCtrl.setButtons(['show']);
       showAdder();
       triggerShortcut('s');
       assert.called(adderCallbacks.onShowAnnotations);
