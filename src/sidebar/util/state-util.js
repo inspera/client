@@ -81,4 +81,19 @@ function awaitStateChange(store, selector) {
   });
 }
 
-module.exports = { awaitStateChange, getDocumentDCIdentifier, getFocusedGroupStorageKeyFromUrn } ;
+// urn format: urn:x-dc:inspera.com/ib%2F58251620
+/**
+* Check the hypothesis app is used in authoring or not.
+*
+* @param {Object} store - Redux store
+* @return {Boolean} true/false.
+ *
+* */
+function isAuthoringContext(store) {
+  const urn = getDCIdentifier(store);
+  const decodedUrn = decodeURIComponent(urn).split('/');
+  const context = decodedUrn[1];
+
+  return context === 'ib';
+}
+module.exports = { awaitStateChange, getDocumentDCIdentifier, getFocusedGroupStorageKeyFromUrn, isAuthoringContext } ;

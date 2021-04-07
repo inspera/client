@@ -24,7 +24,7 @@ function authStateFromProfile(profile) {
       status: 'logged-in',
       displayName,
       userid: profile.userid,
-      privileges: profile.privileges,
+      privileges: profile?.privileges,
       isStudent: profile.isStudent,
       username: parsed.username,
       provider: parsed.provider,
