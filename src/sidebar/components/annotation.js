@@ -4,6 +4,7 @@ const annotationMetadata = require('../annotation-metadata');
 const events = require('../events');
 const { isThirdPartyUser } = require('../util/account-id');
 const serviceConfig = require('../service-config');
+const { isAuthoringContext } = require('../util/state-util');
 
 const isNew = annotationMetadata.isNew;
 const isReply = annotationMetadata.isReply;
@@ -221,24 +222,30 @@ function AnnotationController(
   }
 
   this.authorize = function(action) {
+    // for ItemBank review tool, no need to check since only extended user can access for nw
+    if (isAuthoringContext(store)) {
+      return true;
+    }
+
     if (action === 'reply') {
         return !!session.state.privileges.length;
     }
+
     if ((action === 'delete' || action === 'update') && !this.canPostToCurrentGroup()) {
       return false;
     }
+
     const belongsToUser = permissions.permits(
       self.annotation.permissions,
       action,
       session.state.userid
     );
+
     if (belongsToUser) {
-        return true;
+      return true;
     }
-    if (action === 'delete' && session.state.privileges.indexOf('ar_plan') >= 0) {
-        return true;
-    }
-    return false;
+
+    return action === 'delete' && session.state.privileges.indexOf('ar_plan') >= 0;
   };
 
   // /**
