@@ -1,6 +1,9 @@
 import { act } from 'preact/test-utils';
 
 import { Adder, ARROW_POINTING_UP, ARROW_POINTING_DOWN } from '../adder';
+import Actions from '../actions';
+
+const { SHOW, DELETE } = Actions;
 
 function rect(left, top, width, height) {
   return { left: left, top: top, width: width, height: height };
@@ -37,6 +40,7 @@ describe('Adder', () => {
       onAnnotate: sinon.stub(),
       onHighlight: sinon.stub(),
       onShowAnnotations: sinon.stub(),
+      onRemoveHighlight: sinon.stub(),
     };
     adderEl = document.createElement('div');
     document.body.appendChild(adderEl);
@@ -62,19 +66,22 @@ describe('Adder', () => {
     return { width: rect.width, height: rect.height };
   }
 
+  function showAdder(buttons) {
+    // nb. `act` is necessary here to flush effect hooks in `AdderToolbar`
+    // which setup shortcut handlers.
+    act(() => {
+      if (buttons) {
+        adderCtrl.setButtons(buttons);
+      }
+      adderCtrl.showAt(0, 0, ARROW_POINTING_UP);
+    });
+  }
+
   describe('button handling', () => {
     const getButton = id => getContent(adderCtrl).querySelector(`#${id}`);
 
     const triggerShortcut = key =>
       document.body.dispatchEvent(new KeyboardEvent('keydown', { key }));
-
-    const showAdder = () => {
-      // nb. `act` is necessary here to flush effect hooks in `AdderToolbar`
-      // which setup shortcut handlers.
-      act(() => {
-        adderCtrl.showAt(0, 0, ARROW_POINTING_UP);
-      });
-    };
 
     it('calls onHighlight callback when Highlight button is clicked', () => {
       const highlightBtn = getButton('highlight-adder-button');
@@ -104,8 +111,7 @@ describe('Adder', () => {
 
     it('calls onShowAnnotations callback when Show button is clicked', () => {
       adderCtrl.annotationsForSelection = ['ann1'];
-      adderCtrl.setButtons(['show']);
-      showAdder();
+      showAdder([SHOW]);
       const showBtn = getButton('show-adder-button');
 
       showBtn.click();
@@ -135,20 +141,35 @@ describe('Adder', () => {
 
     it('calls onShowAnnotations callback when shortcut is pressed if adder is visible', () => {
       adderCtrl.annotationsForSelection = ['ann1'];
-      adderCtrl.setButtons(['show']);
-      showAdder();
+      showAdder([SHOW]);
       triggerShortcut('s');
       assert.called(adderCallbacks.onShowAnnotations);
+    });
+
+    it("calls onRemoveHighlight callback when Delete button's label is clicked", () => {
+      showAdder([DELETE]);
+      const deleteBtn = getButton('delete-adder-button');
+      const deleteLabel = deleteBtn.querySelector('span');
+      deleteLabel.dispatchEvent(new Event('click', { bubbles: true }));
+      assert.called(adderCallbacks.onRemoveHighlight);
+    });
+
+    it('calls onRemoveHighlight callback when shortcut is pressed if adder is visible', () => {
+      showAdder([DELETE]);
+      triggerShortcut('d');
+      assert.called(adderCallbacks.onRemoveHighlight);
     });
 
     it('does not call callbacks when adder is hidden', () => {
       triggerShortcut('a');
       triggerShortcut('h');
       triggerShortcut('s');
+      triggerShortcut('d');
 
       assert.notCalled(adderCallbacks.onAnnotate);
       assert.notCalled(adderCallbacks.onHighlight);
       assert.notCalled(adderCallbacks.onShowAnnotations);
+      assert.notCalled(adderCallbacks.onRemoveHighlight);
     });
   });
 
@@ -192,6 +213,44 @@ describe('Adder', () => {
     it('does not positon the adder beyond the left edge of the viewport', () => {
       const target = adderCtrl.target(rect(-100, 100, 10, 10), false);
       assert.isAtLeast(target.left, 0);
+    });
+  });
+
+  describe('#focusedTarget', () => {
+    const mockedEvent = {
+      currentTarget: {
+        getBoundingClientRect: () => ({
+          left: 200,
+          top: 100,
+          width: 300,
+          height: 50,
+        }),
+      },
+    };
+
+    it('positions the adder on the right and below the focused highlight', () => {
+      const clientX = 210;
+      const clientY = 110;
+      const event = { ...mockedEvent, ...{ clientX, clientY } };
+
+      showAdder([DELETE]);
+      const target = adderCtrl.focusedTarget(event);
+      assert.isAbove(target.top, clientY + 10);
+      assert.isAbove(target.left, clientX - 20);
+      assert.equal(target.arrowDirection, ARROW_POINTING_UP);
+    });
+
+    it('positions the adder on the left and above the focused highlight', () => {
+      const viewSize = windowSize();
+      const clientX = 495;
+      const clientY = viewSize.height - 10;
+      const event = { ...mockedEvent, ...{ clientX, clientY } };
+
+      showAdder([DELETE]);
+      const target = adderCtrl.focusedTarget(event);
+      assert.isBelow(target.top, clientY);
+      assert.isBelow(target.left, clientX);
+      assert.equal(target.arrowDirection, ARROW_POINTING_DOWN);
     });
   });
 

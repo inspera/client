@@ -214,10 +214,10 @@ export class Adder {
     const gap = 5;
     const rect = event.currentTarget.getBoundingClientRect();
     const maxX = rect.left + rect.width - gap - shift;
+    const maxY = this._view.innerHeight - this._height() - ARROW_HEIGHT - gap;
     let left = event.clientX - shift;
     let top;
 
-    const maxY = this._view.innerHeight - this._height() - ARROW_HEIGHT - gap;
     const arrowDirection =
       event.clientY < maxY ? ARROW_POINTING_UP : ARROW_POINTING_DOWN;
 
