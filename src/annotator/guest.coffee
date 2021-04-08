@@ -629,6 +629,8 @@ module.exports = class Guest extends Delegator
       this.adderCtrl.setButtons([DELETE])
       { left, top, arrowDirection } = this.adderCtrl.focusedTarget(event)
       this.adderCtrl.showAt(left, top, arrowDirection)
+    else
+      this._onClearSelection()
 
     return unless @visibleHighlights
     annotations = event.annotations ?= []
