@@ -141,7 +141,8 @@ export class Adder {
   }
 
   /**
-   *
+   * Sets the list of toolbar buttons
+   * 
    * @param {array} tools - List of buttons to show
    */
   setButtons(tools) {
@@ -209,20 +210,27 @@ export class Adder {
     return { top, left, arrowDirection };
   }
 
+  /**
+   * Return the best position to show the adder relative to the clicked position
+   *
+   * @param {MouseEvent} event - mouse event
+   * @return {Target}
+   */
   focusedTarget(event) {
     const shift = Math.floor(this._width() / 2);
-    const gap = 5;
-    const rect = event.currentTarget.getBoundingClientRect();
-    const maxX = rect.left + rect.width - gap - shift;
-    const maxY = this._view.innerHeight - this._height() - ARROW_HEIGHT - gap;
+    const margin = 5; // to avoid sticking the toolbar to the edge of the screen
+    /** @type {Element} */ const target = event.currentTarget
+    const rect = target.getBoundingClientRect();
+    const maxX = rect.left + rect.width - margin - shift;
+    const maxY = this._view.innerHeight - this._height() - ARROW_HEIGHT - margin;
     let left = event.clientX - shift;
     let top;
 
     const arrowDirection =
       event.clientY < maxY ? ARROW_POINTING_UP : ARROW_POINTING_DOWN;
 
-    if (left < gap) {
-      left = gap + ARROW_H_MARGIN;
+    if (left < margin) {
+      left = margin + ARROW_H_MARGIN;
     } else if (left + ARROW_H_MARGIN > maxX) {
       left = maxX - ARROW_H_MARGIN;
     } else {
