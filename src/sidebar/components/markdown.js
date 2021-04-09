@@ -152,7 +152,7 @@ function MarkdownController($element, $scope, groups, session) {
           (event.relatedTarget
                 && event.relatedTarget.id !== 'dropdown-saving-selector'
                 && event.relatedTarget.id !== 'cancel-btn')) {
-          if (self.text && this.canPostToCurrentGroup()) {
+          if (self.text && self.canPostToCurrentGroup()) {
               self.onSave();
           }
       }
