@@ -142,7 +142,7 @@ export class Adder {
 
   /**
    * Sets the list of toolbar buttons
-   * 
+   *
    * @param {array} tools - List of buttons to show
    */
   setButtons(tools) {
@@ -219,10 +219,11 @@ export class Adder {
   focusedTarget(event) {
     const shift = Math.floor(this._width() / 2);
     const margin = 5; // to avoid sticking the toolbar to the edge of the screen
-    /** @type {Element} */ const target = event.currentTarget
+    /** @type {Element} */ const target = event.currentTarget;
     const rect = target.getBoundingClientRect();
     const maxX = rect.left + rect.width - margin - shift;
-    const maxY = this._view.innerHeight - this._height() - ARROW_HEIGHT - margin;
+    const maxY =
+      this._view.innerHeight - this._height() - ARROW_HEIGHT - margin;
     let left = event.clientX - shift;
     let top;
 
