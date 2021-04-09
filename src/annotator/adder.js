@@ -219,7 +219,8 @@ export class Adder {
   focusedTarget(event) {
     const shift = Math.floor(this._width() / 2);
     const margin = 5; // to avoid sticking the toolbar to the edge of the screen
-    /** @type {Element} */ const target = event.currentTarget;
+    const target = event.currentTarget;
+    // @ts-ignore - called on mouse click only
     const rect = target.getBoundingClientRect();
     const maxX = rect.left + rect.width - margin - shift;
     const maxY =
