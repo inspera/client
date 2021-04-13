@@ -13,4 +13,5 @@ export default {
   highlight: require('../images/icons/highlight.svg'),
   note: require('../images/icons/note.svg'),
   show: require('../images/icons/show.svg'),
+  trash: require('../images/icons/trash.svg'),
 };

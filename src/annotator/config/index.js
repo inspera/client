@@ -48,10 +48,10 @@ export default function configFrom(window_) {
     captions: settings.hostPageSetting('captions'),
     adderRange: settings.hostPageSetting('adderRange'),
     disableSidebar: settings.hostPageSetting('disableSidebar'),
-    disableShowButton: settings.hostPageSetting('disableShowButton'),
     removeOnClick: settings.hostPageSetting('removeOnClick'),
     onAnnotationAdded: settings.hostPageSetting('onAnnotationAdded'),
     refreshAnnotations: settings.hostPageSetting('refreshAnnotations'),
     onAnnotationClick: settings.hostPageSetting('onAnnotationClick'),
+    onHighlightRemove: settings.hostPageSetting('onHighlightRemove'),
   };
 }
