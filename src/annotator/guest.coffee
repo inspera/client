@@ -352,7 +352,11 @@ module.exports = class Guest extends Delegator
         range = xpathRange.sniff(anchor.range)
         normedRange = range.normalize(root)
         className = 'hypothesis-highlight'
-        className = "#{className} hypothesis-simple-highlight" if anchor.annotation.$highlight
+        if anchor.annotation.$highlight
+          className = "#{className} hypothesis-simple-highlight"
+        else
+          className = "#{className} hypothesis-note"
+
         highlights = highlighter.highlightRange(normedRange, self.config.adderRange?.exclude, className)
 
         $(highlights).data('annotation', anchor.annotation)
@@ -620,11 +624,11 @@ module.exports = class Guest extends Delegator
     annotation = $(event.currentTarget).data('annotation')
     selector = annotation?.target[0].selector
 
-    if selector && this.config.onAnnotationClick
+    if selector && this.config.onAnnotationClick && @visibleHighlights
       this.config.onAnnotationClick(selector, !!annotation.$highlight)
       self.highlightSelected(selector)
 
-    if self.config.onHighlightRemove && annotation.$highlight
+    if self.config.onHighlightRemove && annotation.$highlight && @visibleHighlights
       self.focusedHighlight = annotation
       this.adderCtrl.setButtons([DELETE])
       { left, top, arrowDirection } = this.adderCtrl.focusedTarget(event)
