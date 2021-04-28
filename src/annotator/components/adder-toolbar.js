@@ -1,6 +1,6 @@
 import classnames from 'classnames';
 import { createElement } from 'preact';
-import { useEffect, useRef } from 'preact/hooks';
+import { useRef } from 'preact/hooks';
 import propTypes from 'prop-types';
 
 import { useShortcut } from '../../shared/shortcut';
@@ -23,18 +23,18 @@ function ToolbarButton({
   label,
   onClick,
   shortcut,
-  isFocused,
+  // isFocused, // disabled until IA1-5318 will be fixed
 }) {
   const adderButtonRef = useRef(/** @type {HTMLButtonElement|null} */ (null));
   const title = shortcut ? `${label} (${shortcut})` : label;
 
   useShortcut(shortcut, onClick);
 
-  useEffect(() => {
-    if (isFocused) {
-      adderButtonRef.current.focus();
-    }
-  }, [isFocused]);
+  // useEffect(() => { // disabled until IA1-5318 will be fixed
+  //   if (isFocused) {
+  //     adderButtonRef.current.focus();
+  //   }
+  // }, [isFocused]);
 
   return (
     <button
