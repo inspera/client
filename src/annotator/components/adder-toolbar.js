@@ -1,6 +1,6 @@
 import classnames from 'classnames';
 import { createElement } from 'preact';
-import { useEffect, useRef } from 'preact/hooks';
+import { useRef } from 'preact/hooks';
 import propTypes from 'prop-types';
 
 import { useShortcut } from '../../shared/shortcut';
