@@ -17,6 +17,7 @@ function i18nService($rootScope, localStorage = window.localStorage) {
       sv_se: 'sv-SE',
       es_co: 'es-CO',
       nl_nl: 'nl-NL',
+      he_il: 'he_IL',
   };
   const languageMapIdToIetf = {
       1: 'nb-NO',
@@ -26,6 +27,7 @@ function i18nService($rootScope, localStorage = window.localStorage) {
       11: 'es-CO',
       12: 'pl-PL',
       14: 'nl-NL',
+      15: 'he_IL',
   };
   const supportedLanguages = {
       'en-US': 'English',
@@ -35,6 +37,7 @@ function i18nService($rootScope, localStorage = window.localStorage) {
       'sv-SE': 'Svenska',
       'es-CO': 'Español de América Latina',
       'nl-NL': 'Nederlands',
+      'he_IL': 'עִברִית',
   };
 
   const marketplaceLanguageOverrides = {
