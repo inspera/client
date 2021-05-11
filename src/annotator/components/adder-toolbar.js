@@ -12,6 +12,7 @@ import SvgIcon from '../../shared/components/svg-icon';
  *  @param {number} [props.badgeCount]
  *  @param {string} [props.icon]
  *  @param {string} props.label
+ *  @param {string} props.title
  *  @param {() => any} props.onClick
  *  @param {string|null} props.shortcut
  *  @param {boolean} [props.isFocused]
@@ -21,12 +22,13 @@ function ToolbarButton({
   badgeCount,
   icon,
   label,
+  title,
   onClick,
   shortcut,
   // isFocused, // disabled until IA1-5318 will be fixed
 }) {
   const adderButtonRef = useRef(/** @type {HTMLButtonElement|null} */ (null));
-  const title = shortcut ? `${label} (${shortcut})` : label;
+  const buttonTitle = shortcut ? `${title} (${shortcut})` : label;
 
   useShortcut(shortcut, onClick);
 
@@ -41,8 +43,8 @@ function ToolbarButton({
       id={id}
       className="annotator-adder-actions__button"
       onClick={onClick}
-      aria-label={title}
-      title={title}
+      aria-label={label}
+      title={buttonTitle}
       tabIndex={0}
       ref={adderButtonRef}
     >
@@ -52,7 +54,7 @@ function ToolbarButton({
       {typeof badgeCount === 'number' && (
         <span className="annotator-adder-actions__badge">{badgeCount}</span>
       )}
-      <span className="annotator-adder-actions__label">{label}</span>
+      <span className="annotator-adder-actions__label">{title}</span>
     </button>
   );
 }
@@ -62,6 +64,7 @@ ToolbarButton.propTypes = {
   badgeCount: propTypes.number,
   icon: propTypes.string,
   label: propTypes.string.isRequired,
+  title: propTypes.string.isRequired,
   onClick: propTypes.func.isRequired,
   shortcut: propTypes.string,
   isFocused: propTypes.boolean,
@@ -116,7 +119,8 @@ export default function AdderToolbar({ arrowDirection, isVisible, tools }) {
             id={`${tool.name}-adder-button`}
             icon={tool.icon || tool.name}
             onClick={e => handleCommand(e, tool.command)}
-            label={tool.caption}
+            label={tool.label}
+            title={tool.caption}
             shortcut={tool.shortcut}
             isFocused={isVisible}
           />
