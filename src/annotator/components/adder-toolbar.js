@@ -30,7 +30,7 @@ function ToolbarButton({
 
   useShortcut(shortcut, onClick);
 
-  useEffect(() => { // disabled until IA1-5318 will be fixed
+  useEffect(() => {
     if (isFocused) {
       adderButtonRef.current.focus();
     }
@@ -92,12 +92,12 @@ ToolbarButton.propTypes = {
 export default function AdderToolbar({ arrowDirection, isVisible, tools }) {
   useEffect(() => {
     document.dispatchEvent(
-      new CustomEvent("Hypothesis:adderMounted", { detail: null })
+      new CustomEvent('Hypothesis:adderMounted', { detail: null })
     );
 
     return () => {
       document.dispatchEvent(
-        new CustomEvent("Hypothesis:adderUnmounted", { detail: null })
+        new CustomEvent('Hypothesis:adderUnmounted', { detail: null })
       );
     };
   }, []);
@@ -121,7 +121,10 @@ export default function AdderToolbar({ arrowDirection, isVisible, tools }) {
       style={{ visibility: isVisible ? 'visible' : 'hidden' }}
     >
       {/* @ts-ignore */}
-      <hypothesis-adder-actions className="annotator-adder-actions" id="annotator-adder-actions">
+      <hypothesis-adder-actions
+        className="annotator-adder-actions"
+        id="annotator-adder-actions"
+      >
         {tools.map((tool, index) => (
           <ToolbarButton
             key={tool.name}
