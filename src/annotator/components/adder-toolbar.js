@@ -90,17 +90,27 @@ ToolbarButton.propTypes = {
  * @param {AdderToolbarProps} props
  */
 export default function AdderToolbar({ arrowDirection, isVisible, tools }) {
-  useEffect(() => {
-    document.dispatchEvent(
-      new CustomEvent('Hypothesis:adderMounted', { detail: null })
-    );
+  const adderActionsContainerRef = useRef(
+    /** @type {HTMLButtonElement|null} */ (null)
+  );
 
-    return () => {
+  useEffect(() => {
+    if (isVisible) {
       document.dispatchEvent(
-        new CustomEvent('Hypothesis:adderUnmounted', { detail: null })
+        new CustomEvent('Hypothesis:adderIsVisible', {
+          detail: adderActionsContainerRef.current,
+        })
       );
-    };
-  }, []);
+
+      return;
+    }
+
+    document.dispatchEvent(
+      new CustomEvent('Hypothesis:adderIsHidden', {
+        detail: adderActionsContainerRef.current,
+      })
+    );
+  }, [isVisible]);
 
   const handleCommand = (event, command) => {
     event.preventDefault();
@@ -123,7 +133,7 @@ export default function AdderToolbar({ arrowDirection, isVisible, tools }) {
       {/* @ts-ignore */}
       <hypothesis-adder-actions
         className="annotator-adder-actions"
-        id="annotator-adder-actions"
+        ref={adderActionsContainerRef}
       >
         {tools.map((tool, index) => (
           <ToolbarButton
