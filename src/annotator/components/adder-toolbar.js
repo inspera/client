@@ -95,19 +95,12 @@ export default function AdderToolbar({ arrowDirection, isVisible, tools }) {
   );
 
   useEffect(() => {
-    if (isVisible) {
-      document.dispatchEvent(
-        new CustomEvent('Hypothesis:adderIsVisible', {
-          detail: adderActionsContainerRef.current,
-        })
-      );
-
-      return;
-    }
-
     document.dispatchEvent(
-      new CustomEvent('Hypothesis:adderIsHidden', {
-        detail: adderActionsContainerRef.current,
+      new CustomEvent('Hypothesis:adderVisibilityChanged', {
+        detail: {
+          container: adderActionsContainerRef.current,
+          isVisible,
+        },
       })
     );
   }, [isVisible]);
