@@ -1,6 +1,6 @@
 import classnames from 'classnames';
 import { createElement } from 'preact';
-import { useRef } from 'preact/hooks';
+import { useRef, useEffect } from 'preact/hooks';
 import propTypes from 'prop-types';
 
 import { useShortcut } from '../../shared/shortcut';
@@ -23,18 +23,18 @@ function ToolbarButton({
   label,
   onClick,
   shortcut,
-  // isFocused, // disabled until IA1-5318 will be fixed
+  isFocused,
 }) {
   const adderButtonRef = useRef(/** @type {HTMLButtonElement|null} */ (null));
   const title = shortcut ? `${label} (${shortcut})` : label;
 
   useShortcut(shortcut, onClick);
 
-  // useEffect(() => { // disabled until IA1-5318 will be fixed
-  //   if (isFocused) {
-  //     adderButtonRef.current.focus();
-  //   }
-  // }, [isFocused]);
+  useEffect(() => {
+    if (isFocused) {
+      adderButtonRef.current.focus();
+    }
+  }, [isFocused]);
 
   return (
     <button
@@ -90,6 +90,21 @@ ToolbarButton.propTypes = {
  * @param {AdderToolbarProps} props
  */
 export default function AdderToolbar({ arrowDirection, isVisible, tools }) {
+  const adderActionsContainerRef = useRef(
+    /** @type {HTMLButtonElement|null} */ (null)
+  );
+
+  useEffect(() => {
+    document.dispatchEvent(
+      new CustomEvent('Hypothesis:adderVisibilityChanged', {
+        detail: {
+          container: adderActionsContainerRef.current,
+          isVisible,
+        },
+      })
+    );
+  }, [isVisible]);
+
   const handleCommand = (event, command) => {
     event.preventDefault();
     event.stopPropagation();
@@ -109,8 +124,11 @@ export default function AdderToolbar({ arrowDirection, isVisible, tools }) {
       style={{ visibility: isVisible ? 'visible' : 'hidden' }}
     >
       {/* @ts-ignore */}
-      <hypothesis-adder-actions className="annotator-adder-actions">
-        {tools.map(tool => (
+      <hypothesis-adder-actions
+        className="annotator-adder-actions"
+        ref={adderActionsContainerRef}
+      >
+        {tools.map((tool, index) => (
           <ToolbarButton
             key={tool.name}
             id={`${tool.name}-adder-button`}
@@ -118,7 +136,7 @@ export default function AdderToolbar({ arrowDirection, isVisible, tools }) {
             onClick={e => handleCommand(e, tool.command)}
             label={tool.caption}
             shortcut={tool.shortcut}
-            isFocused={isVisible}
+            isFocused={isVisible && index === 0}
           />
         ))}
         {/* @ts-ignore */}
