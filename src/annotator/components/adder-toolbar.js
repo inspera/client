@@ -23,7 +23,7 @@ function ToolbarButton({
   label,
   onClick,
   shortcut,
-  isFocused, // disabled until IA1-5318 will be fixed
+  isFocused,
 }) {
   const adderButtonRef = useRef(/** @type {HTMLButtonElement|null} */ (null));
   const title = shortcut ? `${label} (${shortcut})` : label;
