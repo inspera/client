@@ -286,6 +286,7 @@ export class Adder {
     const existingTools = [
       {
         name: 'annotate',
+        label: this._captions.annotateLabel || 'create annotation',
         caption: this._captions.annotate || 'annotate',
         command: () => {
           this._onAnnotate();
@@ -295,6 +296,7 @@ export class Adder {
       },
       {
         name: 'highlight',
+        label: this._captions.highlightLabel || 'create highlight',
         caption: this._captions.highlight || 'highlight',
         command: () => {
           this._onHighlight();
